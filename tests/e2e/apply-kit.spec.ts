@@ -22,10 +22,10 @@ test.beforeEach(async () => {
     .insert({
       user_id: user.id,
       file_name: 'test-resume.pdf',
-      file_path: `${user.id}/test-resume.pdf`,
+      file_url: 'https://placeholder.test/fake-resume.pdf',
       file_size: 1024,
       file_type: 'application/pdf',
-      status: 'analyzed',
+      analysis_status: 'success',
       parsed_data: {
         name: 'Test User',
         education: [],
