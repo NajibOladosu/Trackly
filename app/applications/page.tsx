@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/shared/ui/card"
 import { Button } from "@/shared/ui/button"
 import { Input } from "@/shared/ui/input"
 import { Badge } from "@/shared/ui/badge"
+import { Checkbox } from "@/shared/ui/checkbox"
 import { motion } from "framer-motion"
 import {
   Plus,
@@ -306,30 +307,17 @@ export default function ApplicationsPage() {
           disabled={bulkLoading}
         />
 
-        {/* Select-all toggle */}
-        {filteredApplications.length > 0 && (
+        {/* Select-all toggle — only once something is selected */}
+        {filteredApplications.length > 0 && selectedIds.size > 0 && (
           <div className="flex items-center gap-2 px-1">
-            <input
-              type="checkbox"
-              className="h-4 w-4 rounded border-zinc-700 bg-zinc-900 cursor-pointer"
-              checked={
-                selectedIds.size > 0 &&
-                selectedIds.size === filteredApplications.length
-              }
-              ref={(el) => {
-                if (el) {
-                  el.indeterminate =
-                    selectedIds.size > 0 &&
-                    selectedIds.size < filteredApplications.length
-                }
-              }}
+            <Checkbox
+              checked={selectedIds.size === filteredApplications.length}
+              indeterminate={selectedIds.size < filteredApplications.length}
               onChange={toggleSelectAll}
               aria-label="Select all applications"
             />
             <span className="text-xs text-muted-foreground">
-              {selectedIds.size > 0
-                ? `${selectedIds.size} of ${filteredApplications.length} selected`
-                : 'Select all'}
+              {`${selectedIds.size} of ${filteredApplications.length} selected`}
             </span>
           </div>
         )}
@@ -365,21 +353,27 @@ export default function ApplicationsPage() {
                 transition={{ duration: 0.3, delay: index * 0.05 }}
               >
                 <Card
-                  className={`hover:border-primary/40 transition-all ${
+                  className={`group hover:border-primary/40 transition-all ${
                     selectedIds.has(app.id) ? 'border-primary/60 bg-primary/5' : ''
                   }`}
                 >
                   <CardContent className="p-4 sm:p-6">
                     <div className="flex flex-col sm:flex-row sm:items-start gap-4">
                       <div className="flex items-start gap-3 sm:gap-4 flex-1 min-w-0">
-                        <input
-                          type="checkbox"
-                          className="h-4 w-4 mt-2 rounded border-zinc-700 bg-zinc-900 cursor-pointer shrink-0"
-                          checked={selectedIds.has(app.id)}
-                          onChange={() => toggleSelect(app.id)}
-                          onClick={(e) => e.stopPropagation()}
-                          aria-label={`Select ${app.title}`}
-                        />
+                        <div
+                          className={`mt-2 shrink-0 transition-opacity duration-150 ${
+                            selectedIds.size > 0
+                              ? 'opacity-100'
+                              : 'opacity-0 group-hover:opacity-100 focus-within:opacity-100'
+                          }`}
+                        >
+                          <Checkbox
+                            checked={selectedIds.has(app.id)}
+                            onChange={() => toggleSelect(app.id)}
+                            onClick={(e) => e.stopPropagation()}
+                            aria-label={`Select ${app.title}`}
+                          />
+                        </div>
                         <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-secondary flex items-center justify-center shrink-0">
                           <Briefcase className="h-5 w-5 sm:h-6 sm:w-6 text-foreground" />
                         </div>
