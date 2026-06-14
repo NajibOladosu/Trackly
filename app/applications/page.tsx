@@ -213,10 +213,17 @@ export default function ApplicationsPage() {
               Manage and track all your job and scholarship applications
             </p>
           </div>
-          <Button className="glow-effect w-full sm:w-auto" onClick={() => setIsModalOpen(true)}>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Application
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            <Link href="/apply" className="w-full sm:w-auto">
+              <Button variant="outline" className="w-full sm:w-auto">
+                New Apply Kit
+              </Button>
+            </Link>
+            <Button className="glow-effect w-full sm:w-auto" onClick={() => setIsModalOpen(true)}>
+              <Plus className="mr-2 h-4 w-4" />
+              Add Application
+            </Button>
+          </div>
         </div>
 
         {/* Filters */}

@@ -24,7 +24,6 @@ import {
   TrendingUp,
   Award,
   Target,
-  Sparkles,
 } from "lucide-react"
 import { createClient } from "@/shared/db/supabase/client"
 import { getApplications, getApplicationStats } from "@/modules/applications/services/application.service"
@@ -219,12 +218,6 @@ export default function DashboardPage() {
                   Analytics
                 </TabsTrigger>
               </TabsList>
-              <Link href="/apply">
-                <Button className="gap-2 w-full sm:w-auto">
-                  <Sparkles className="h-4 w-4" />
-                  New Apply Kit
-                </Button>
-              </Link>
               <Button
                 className="glow-effect w-full sm:w-auto"
                 asChild
