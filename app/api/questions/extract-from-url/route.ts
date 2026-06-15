@@ -4,54 +4,11 @@ import { callGeminiWithFallback } from '@/shared/infrastructure/ai'
 import { AIRateLimitError } from '@/shared/infrastructure/ai/model-manager'
 import { rateLimitMiddleware, RATE_LIMITS } from '@/lib/middleware/rate-limit'
 import { isPublicHttpUrl } from '@/lib/security/url-validator'
+import { htmlToText } from '@/lib/parsing/html-to-text'
 
 const aiConfigured = !!process.env.GEMINI_API_KEY
 
 export const dynamic = 'force-dynamic'
-
-/**
- * Extract text content from HTML
- * Removes script, style tags and extracts readable text
- */
-function extractTextFromHTML(html: string): string {
-  try {
-    // Remove script and style tags with their content
-    let text = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-    text = text.replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
-
-    // Remove HTML comments
-    text = text.replace(/<!--[\s\S]*?-->/g, '')
-
-    // Add newlines for better structure preservation
-    // Convert common block elements to newlines
-    text = text.replace(/<\/(div|p|h[1-6]|li|tr|section|article|header|footer|form|fieldset|label)>/gi, '\n')
-    text = text.replace(/<(br|hr)\s*\/?>/gi, '\n')
-
-    // Remove remaining HTML tags but keep the content
-    text = text.replace(/<[^>]+>/g, ' ')
-
-    // Decode HTML entities
-    text = text.replace(/&nbsp;/g, ' ')
-    text = text.replace(/&amp;/g, '&')
-    text = text.replace(/&lt;/g, '<')
-    text = text.replace(/&gt;/g, '>')
-    text = text.replace(/&quot;/g, '"')
-    text = text.replace(/&#39;/g, "'")
-    text = text.replace(/&apos;/g, "'")
-
-    // Clean up excessive whitespace while preserving line breaks
-    text = text.replace(/[ \t]+/g, ' ')  // Multiple spaces/tabs to single space
-    text = text.replace(/\n\s+/g, '\n')  // Remove spaces at start of lines
-    text = text.replace(/\s+\n/g, '\n')  // Remove spaces at end of lines
-    text = text.replace(/\n{3,}/g, '\n\n')  // Max 2 consecutive newlines
-    text = text.trim()
-
-    return text
-  } catch (error) {
-    console.error('Error extracting text from HTML:', error)
-    return html
-  }
-}
 
 /**
  * POST /api/questions/extract-from-url
@@ -182,7 +139,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Extract text from HTML
-    const textContent = extractTextFromHTML(htmlContent)
+    const textContent = htmlToText(htmlContent)
 
     console.log(`Extracted ${textContent.length} characters from ${url}`)
 

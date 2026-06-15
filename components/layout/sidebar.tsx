@@ -16,11 +16,13 @@ import {
   X,
   MessageSquare,
   Mic,
+  Briefcase,
 } from "lucide-react"
 import { motion } from "framer-motion"
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/apply", label: "Apply Kit", icon: Briefcase },
   { href: "/applications", label: "Applications", icon: FileText },
   { href: "/interview", label: "Interview", icon: Mic },
   { href: "/documents", label: "Documents", icon: FolderOpen },

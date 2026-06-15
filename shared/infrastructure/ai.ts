@@ -1547,3 +1547,64 @@ Return ONLY valid JSON (no markdown, no code fences):
     throw new Error('Failed to analyze resume match. Please try again.')
   }
 }
+
+export interface ParsedJob {
+  title: string
+  company: string | null
+  job_description: string
+}
+
+/**
+ * Turn raw job-posting text (scraped HTML text or pasted) into structured fields.
+ * Title falls back to a placeholder so a NOT NULL applications.title insert never fails.
+ */
+export async function parseJobPosting(text: string): Promise<ParsedJob> {
+  if (!isGeminiConfigured()) {
+    throw new Error('AI is not configured. Please add your Gemini API key.')
+  }
+
+  const source = text.slice(0, 20000)
+
+  const prompt = `You extract structured fields from a job or scholarship posting.
+
+POSTING TEXT:
+${source}
+
+Return ONLY valid JSON (no markdown, no code fences, no commentary):
+{
+  "title": "<the role/position title exactly as written, or empty string if none>",
+  "company": "<the hiring company or organization name, or null if none>",
+  "job_description": "<the cleaned, readable job description: responsibilities, requirements, and about-the-role text with navigation/boilerplate/cookie notices removed>"
+}
+
+RULES:
+- Do NOT invent details that are not in the text.
+- job_description must be plain text copied/cleaned from the posting, not summarized away.
+- If you cannot find a company, use null (not the string "null").`
+
+  try {
+    const raw = await callGeminiWithFallback(prompt, 'MEDIUM')
+
+    let jsonText = raw
+    const fence = raw.match(/```(?:json)?\s*([\s\S]*?)```/)
+    if (fence) jsonText = fence[1].trim()
+    const jsonMatch = jsonText.match(/\{[\s\S]*\}/)
+    if (!jsonMatch) {
+      throw new Error('no json')
+    }
+
+    const parsed = JSON.parse(jsonMatch[0]) as Partial<ParsedJob>
+    const title = typeof parsed.title === 'string' && parsed.title.trim() ? parsed.title.trim() : 'Untitled Application'
+    const company = typeof parsed.company === 'string' && parsed.company.trim() ? parsed.company.trim() : null
+    const job_description =
+      typeof parsed.job_description === 'string' && parsed.job_description.trim()
+        ? parsed.job_description.trim()
+        : text.trim()
+
+    return { title, company, job_description }
+  } catch (error) {
+    if (error instanceof AIRateLimitError) throw error
+    console.error('Error parsing job posting:', error)
+    throw new Error('Failed to parse job posting. Please try again.')
+  }
+}

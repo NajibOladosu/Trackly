@@ -194,7 +194,7 @@ export async function proxy(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   // Protected routes
-  const protectedRoutes = ['/dashboard', '/applications', '/documents', '/upload', '/notifications', '/profile', '/settings']
+  const protectedRoutes = ['/dashboard', '/apply', '/applications', '/documents', '/upload', '/notifications', '/profile', '/settings']
   const isProtectedRoute = protectedRoutes.some(route => request.nextUrl.pathname.startsWith(route))
 
   // Redirect to login if accessing protected route without auth
