@@ -5,9 +5,19 @@
  */
 export function htmlToText(html: string): string {
   try {
-    let text = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-    text = text.replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
-    text = text.replace(/<!--[\s\S]*?-->/g, '')
+    const replaceUntilStable = (input: string, pattern: RegExp, replacement: string): string => {
+      let previous: string
+      let current = input
+      do {
+        previous = current
+        current = current.replace(pattern, replacement)
+      } while (current !== previous)
+      return current
+    }
+
+    let text = replaceUntilStable(html, /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    text = replaceUntilStable(text, /<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
+    text = replaceUntilStable(text, /<!--[\s\S]*?-->/g, '')
     text = text.replace(/<\/(div|p|h[1-6]|li|tr|section|article|header|footer|form|fieldset|label)>/gi, '\n')
     text = text.replace(/<(br|hr)\s*\/?>/gi, '\n')
     text = text.replace(/<[^>]+>/g, ' ')
