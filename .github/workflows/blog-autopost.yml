@@ -9,6 +9,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   generate:
@@ -23,7 +24,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install deps
@@ -40,12 +41,30 @@ jobs:
           git config user.name "applyos-bot"
           git config user.email "bot@applyos.io"
 
-      - name: Commit + push
+      - name: Commit + push branch
+        id: push
         env:
           POST_PATH: ${{ steps.gen.outputs.path }}
           POST_TITLE: ${{ steps.gen.outputs.title }}
           POST_SLUG: ${{ steps.gen.outputs.slug }}
         run: |
+          BRANCH="blog/${POST_SLUG}-${GITHUB_RUN_ID}"
+          echo "branch=${BRANCH}" >> "$GITHUB_OUTPUT"
+          git checkout -b "${BRANCH}"
           git add -- "$POST_PATH"
           git commit -m "blog: $POST_TITLE" -m "Auto-generated post: $POST_SLUG"
-          git push origin HEAD:main
+          git push origin "${BRANCH}"
+
+      - name: Open PR and enable auto-merge
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: ${{ steps.push.outputs.branch }}
+          POST_TITLE: ${{ steps.gen.outputs.title }}
+          POST_SLUG: ${{ steps.gen.outputs.slug }}
+        run: |
+          gh pr create \
+            --base main \
+            --head "${BRANCH}" \
+            --title "blog: ${POST_TITLE}" \
+            --body "Auto-generated post: \`${POST_SLUG}\`"
+          gh pr merge "${BRANCH}" --auto --squash --delete-branch
