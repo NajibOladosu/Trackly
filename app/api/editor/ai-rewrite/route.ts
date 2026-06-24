@@ -45,6 +45,6 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ rewritten: rewritten.trim() })
     } catch (error) {
         console.error("AI Rewrite Error:", error)
-        return new NextResponse(error instanceof Error ? error.message : "Internal Server Error", { status: 500 })
+        return new NextResponse("Internal Server Error", { status: 500 })
     }
 }

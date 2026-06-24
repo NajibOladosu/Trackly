@@ -122,7 +122,7 @@ ${JSON.stringify(contentJson)}
     } catch (error) {
         console.error("[Apply Recommendations] Error:", error)
         return new NextResponse(
-            JSON.stringify({ error: error instanceof Error ? error.message : "Internal Server Error" }),
+            JSON.stringify({ error: "Internal Server Error" }),
             { status: 500, headers: { "Content-Type": "application/json" } },
         )
     }

@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
     } catch (error) {
         console.error("[DOCX Export] Error:", error)
         return new NextResponse(
-            JSON.stringify({ error: error instanceof Error ? error.message : "DOCX export failed" }),
+            JSON.stringify({ error: "DOCX export failed" }),
             { status: 500, headers: { "Content-Type": "application/json" } },
         )
     }

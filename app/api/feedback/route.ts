@@ -9,6 +9,7 @@ import { createClient as createSupabaseServerClient } from '@/shared/db/supabase
 import { sendEmail } from '@/shared/infrastructure/email'
 import { feedbackNotificationTemplate, feedbackNotificationSubject } from '@/shared/infrastructure/email/templates/feedback-notification'
 import { rateLimitMiddleware, RATE_LIMITS } from '@/lib/middleware/rate-limit'
+import { validateString, MAX_LENGTHS } from '@/lib/validation'
 import type { FeedbackType } from '@/types/database'
 
 export const dynamic = 'force-dynamic'
@@ -46,6 +47,12 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
+
+    const titleErr = validateString(title, 'title', { maxLength: MAX_LENGTHS.feedbackTitle })
+    if (titleErr) return NextResponse.json({ error: titleErr }, { status: 400 })
+
+    const descErr = validateString(description, 'description', { maxLength: MAX_LENGTHS.feedbackDescription })
+    if (descErr) return NextResponse.json({ error: descErr }, { status: 400 })
 
     // Get user profile for email
     const { data: userProfile } = await supabase

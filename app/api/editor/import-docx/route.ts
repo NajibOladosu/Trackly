@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
     } catch (error) {
         console.error("[DOCX Import] Error:", error)
         return new NextResponse(
-            JSON.stringify({ error: error instanceof Error ? error.message : "DOCX import failed" }),
+            JSON.stringify({ error: "DOCX import failed" }),
             { status: 500, headers: { "Content-Type": "application/json" } },
         )
     }

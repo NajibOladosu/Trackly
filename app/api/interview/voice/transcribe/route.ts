@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/shared/db/supabase/server'
 import { transcribeAudioWithRetry, validateAudioData, AudioProcessingError } from '@/shared/infrastructure/ai-audio'
 import { rateLimitMiddleware, RATE_LIMITS } from '@/lib/middleware/rate-limit'
+import {
+  MAX_AUDIO_CHUNKS,
+  MAX_AUDIO_TOTAL_BASE64_CHARS,
+  ALLOWED_AUDIO_MIME_TYPES,
+} from '@/lib/validation'
 
 export const dynamic = 'force-dynamic'
 
@@ -46,6 +51,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    if (audioChunks.length > MAX_AUDIO_CHUNKS) {
+      return NextResponse.json(
+        { error: `Too many audio chunks (max ${MAX_AUDIO_CHUNKS})` },
+        { status: 400 }
+      )
+    }
+
     if (!mimeType || typeof mimeType !== 'string') {
       return NextResponse.json(
         { error: 'mimeType string is required' },
@@ -53,10 +65,28 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Validate mimeType against allowlist (base type without codec params)
+    const baseMime = mimeType.split(';')[0].trim().toLowerCase()
+    const mimeAllowed =
+      ALLOWED_AUDIO_MIME_TYPES.has(mimeType) ||
+      ALLOWED_AUDIO_MIME_TYPES.has(baseMime)
+    if (!mimeAllowed) {
+      return NextResponse.json(
+        { error: 'Unsupported audio format' },
+        { status: 415 }
+      )
+    }
+
     // Combine audio chunks into single blob
-    // For MVP, we concatenate the base64 strings
-    // In production, you'd want to properly combine audio blobs
     const combinedAudio = audioChunks.join('')
+
+    // Enforce total payload size limit
+    if (combinedAudio.length > MAX_AUDIO_TOTAL_BASE64_CHARS) {
+      return NextResponse.json(
+        { error: 'Audio payload exceeds maximum allowed size' },
+        { status: 413 }
+      )
+    }
 
     // Validate audio data
     const validation = validateAudioData(combinedAudio, mimeType)
@@ -105,11 +135,9 @@ export async function POST(request: NextRequest) {
     }
 
   } catch (error) {
+    console.error('[Transcribe] Unexpected error:', error)
     return NextResponse.json(
-      {
-        error: error instanceof Error ? error.message : 'Failed to transcribe audio',
-        details: process.env.NODE_ENV === 'development' && error instanceof Error ? error.stack : undefined
-      },
+      { error: 'Failed to transcribe audio' },
       { status: 500 }
     )
   }

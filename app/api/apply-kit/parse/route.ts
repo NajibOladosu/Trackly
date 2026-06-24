@@ -5,6 +5,7 @@ import { AIRateLimitError } from '@/shared/infrastructure/ai/model-manager'
 import { rateLimitMiddleware, RATE_LIMITS } from '@/lib/middleware/rate-limit'
 import { isPublicHttpUrl } from '@/lib/security/url-validator'
 import { htmlToText } from '@/lib/parsing/html-to-text'
+import { MAX_LENGTHS } from '@/lib/validation'
 
 const aiConfigured = !!process.env.GEMINI_API_KEY
 
@@ -119,6 +120,12 @@ export async function POST(request: NextRequest) {
       if (sourceText.length < 20) {
         return NextResponse.json(
           { error: 'Job description text is too short to parse.' },
+          { status: 400 }
+        )
+      }
+      if (sourceText.length > MAX_LENGTHS.jobText) {
+        return NextResponse.json(
+          { error: `Job description text exceeds maximum length of ${MAX_LENGTHS.jobText} characters.` },
           { status: 400 }
         )
       }
