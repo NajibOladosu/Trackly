@@ -9,11 +9,19 @@ export const MAX_LENGTHS = {
   feedbackDescription: 5_000,
   answerText: 10_000,
   userAnswer: 10_000,
+  userResponse: 10_000,     // conversation endpoint
   jobText: 50_000,
+  jobDescription: 50_000,
   coverLetterInstructions: 2_000,
   companyName: 200,
   category: 100,
   fileName: 255,
+  extractedText: 200_000,   // PDF/DOCX text passed to AI (resume text can be large)
+  aiRewriteContent: 5_000,  // single resume block rewrite
+  analysisFeedback: 2_000,  // rewrite feedback context
+  csvContent: 500_000,      // bulk import CSV
+  recommendation: 500,      // single recommendation string
+  MAX_RECOMMENDATIONS: 20,  // max items in recommendations array
 } as const
 
 // ─── Upload Limits ────────────────────────────────────────────────────────────

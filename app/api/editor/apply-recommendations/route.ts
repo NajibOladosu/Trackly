@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { createClient } from "@/shared/db/supabase/server"
 import { callGeminiWithFallback } from "@/shared/infrastructure/ai"
 import { rateLimitMiddleware, RATE_LIMITS } from "@/lib/middleware/rate-limit"
+import { MAX_LENGTHS } from "@/lib/validation"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
@@ -50,6 +51,23 @@ export async function POST(req: NextRequest) {
         }
         if (!Array.isArray(recommendations) || recommendations.length === 0) {
             return new NextResponse("No recommendations provided", { status: 400 })
+        }
+
+        if (recommendations.length > MAX_LENGTHS.MAX_RECOMMENDATIONS) {
+            return new NextResponse(
+                `Too many recommendations (max ${MAX_LENGTHS.MAX_RECOMMENDATIONS})`,
+                { status: 400 }
+            )
+        }
+
+        const oversizedRec = recommendations.find(
+            (r: unknown) => typeof r !== 'string' || r.length > MAX_LENGTHS.recommendation
+        )
+        if (oversizedRec !== undefined) {
+            return new NextResponse(
+                `Each recommendation must be a string of at most ${MAX_LENGTHS.recommendation} characters`,
+                { status: 400 }
+            )
         }
 
         const { data: app, error: appError } = await supabase

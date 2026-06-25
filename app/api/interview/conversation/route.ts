@@ -5,6 +5,7 @@ import { getQuestionsForSession, getInterviewSession, updateInterviewSession, cr
 import { generateInterviewQuestions, callGeminiWithFallback } from '@/shared/infrastructure/ai'
 import { isGeminiConfigured } from '@/shared/infrastructure/ai/client'
 import { rateLimitMiddleware, RATE_LIMITS } from '@/lib/middleware/rate-limit'
+import { MAX_LENGTHS } from '@/lib/validation'
 import type { QuestionCategory, InterviewSession } from '@/types/database'
 import type { SupabaseClient } from '@supabase/supabase-js'
 
@@ -53,6 +54,23 @@ export async function POST(request: NextRequest) {
                 JSON.stringify({ error: 'Missing required fields: sessionId, action' }),
                 { status: 400, headers: { 'Content-Type': 'application/json' } }
             )
+        }
+
+        const VALID_ACTIONS = ['start', 'respond', 'end']
+        if (!VALID_ACTIONS.includes(action)) {
+            return new Response(
+                JSON.stringify({ error: 'Invalid action. Must be: start, respond, or end' }),
+                { status: 400, headers: { 'Content-Type': 'application/json' } }
+            )
+        }
+
+        if (userResponse !== undefined) {
+            if (typeof userResponse !== 'string' || userResponse.length > MAX_LENGTHS.userResponse) {
+                return new Response(
+                    JSON.stringify({ error: `userResponse exceeds maximum length of ${MAX_LENGTHS.userResponse} characters` }),
+                    { status: 400, headers: { 'Content-Type': 'application/json' } }
+                )
+            }
         }
 
         // Verify session belongs to user
