@@ -4,6 +4,7 @@ import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { generateCoverLetter } from "@/shared/infrastructure/ai"
 import { buildContextFromDocument } from "@/modules/documents/services/document.service"
 import { rateLimitMiddleware, RATE_LIMITS } from "@/lib/middleware/rate-limit"
+import { validateString, MAX_LENGTHS } from "@/lib/validation"
 
 export const dynamic = 'force-dynamic'
 
@@ -54,6 +55,14 @@ export async function POST(req: NextRequest) {
         { error: "Missing applicationId" },
         { status: 400 }
       )
+    }
+
+    if (instructions) {
+      const instrErr = validateString(instructions, 'instructions', {
+        required: false,
+        maxLength: MAX_LENGTHS.coverLetterInstructions,
+      })
+      if (instrErr) return NextResponse.json({ error: instrErr }, { status: 400 })
     }
 
     // Verify the application belongs to the user and get its details

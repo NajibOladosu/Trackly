@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/shared/db/supabase/server'
 import { getQuestionsForSession } from '@/modules/interviews/services/interview.service'
 import { rateLimitMiddleware, RATE_LIMITS } from '@/lib/middleware/rate-limit'
+import { validateString, MAX_LENGTHS } from '@/lib/validation'
 
 export async function POST(request: NextRequest) {
     try {
@@ -41,6 +42,9 @@ export async function POST(request: NextRequest) {
                 { status: 400 }
             )
         }
+
+        const answerErr = validateString(userAnswer, 'userAnswer', { maxLength: MAX_LENGTHS.userAnswer })
+        if (answerErr) return NextResponse.json({ error: answerErr }, { status: 400 })
 
         // 1. Get questions for session to map index to ID
         const questions = await getQuestionsForSession(sessionId, supabase)
@@ -92,7 +96,7 @@ export async function POST(request: NextRequest) {
     } catch (error) {
         console.error('Error in save-answer-v2:', error)
         return NextResponse.json(
-            { error: error instanceof Error ? error.message : 'Internal server error' },
+            { error: 'Failed to save answer' },
             { status: 500 }
         )
     }

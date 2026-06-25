@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { createClient } from "@/shared/db/supabase/server"
 import { callGeminiWithFallback } from "@/shared/infrastructure/ai"
 import { rateLimitMiddleware, RATE_LIMITS } from "@/lib/middleware/rate-limit"
+import { MAX_LENGTHS } from "@/lib/validation"
 
 export async function POST(req: NextRequest) {
     try {
@@ -18,6 +19,13 @@ export async function POST(req: NextRequest) {
 
         if (!extractedText) {
             return new NextResponse("Missing extractedText", { status: 400 })
+        }
+
+        if (typeof extractedText !== 'string' || extractedText.length > MAX_LENGTHS.extractedText) {
+            return new NextResponse(
+                `extractedText exceeds maximum length of ${MAX_LENGTHS.extractedText} characters`,
+                { status: 400 }
+            )
         }
 
         const prompt = `You are a resume formatting expert. The following text was extracted from a PDF resume (possibly LaTeX-generated), and the formatting is messy.

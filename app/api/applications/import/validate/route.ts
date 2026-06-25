@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/shared/db/supabase/server'
 import { validateCSV } from '@/modules/documents/lib/csv-utils'
 import { rateLimitMiddleware, RATE_LIMITS } from '@/lib/middleware/rate-limit'
+import { MAX_LENGTHS } from '@/lib/validation'
 
 export const dynamic = 'force-dynamic'
 
@@ -21,6 +22,13 @@ export async function POST(request: NextRequest) {
 
     if (!csvContent) {
       return NextResponse.json({ error: 'CSV content is required' }, { status: 400 })
+    }
+
+    if (typeof csvContent !== 'string' || csvContent.length > MAX_LENGTHS.csvContent) {
+      return NextResponse.json(
+        { error: `CSV content exceeds maximum allowed size of ${MAX_LENGTHS.csvContent} characters` },
+        { status: 400 }
+      )
     }
 
     // Validate CSV

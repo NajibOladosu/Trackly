@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
         savedCount++
       } catch (error) {
         console.error(`Failed to save turn ${turn.turn_number}:`, error)
-        errors.push(`Turn ${turn.turn_number}: ${error instanceof Error ? error.message : String(error)}`)
+        errors.push(`Turn ${turn.turn_number}: failed to save`)
       }
     }
 
@@ -108,7 +108,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error flushing conversation turns:', error)
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Internal server error' },
+      { error: 'Internal server error' },
       { status: 500 }
     )
   }

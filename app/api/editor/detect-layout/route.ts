@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
     } catch (error) {
         console.error("[Layout Detect] Error:", error)
         return new NextResponse(
-            JSON.stringify({ error: error instanceof Error ? error.message : "Layout detection failed" }),
+            JSON.stringify({ error: "Layout detection failed" }),
             { status: 500, headers: { "Content-Type": "application/json" } },
         )
     }

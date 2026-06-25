@@ -277,7 +277,7 @@ Be honest with your scoring. Don't inflate or deflate scores.`
       )
     }
     console.error('Error generating interview report:', error)
-    return NextResponse.json({ error: error instanceof Error ? error.message : 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 

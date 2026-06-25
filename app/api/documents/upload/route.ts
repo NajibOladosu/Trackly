@@ -6,6 +6,11 @@ import RetryQueueService from "@/shared/infrastructure/ai/retry-queue"
 import { extractTextFromPDF } from "@/modules/documents/lib/pdf-utils"
 import { extractTextFromDOCX } from "@/modules/documents/lib/docx-utils"
 import { rateLimitMiddleware, RATE_LIMITS } from "@/lib/middleware/rate-limit"
+import {
+  MAX_DOCUMENT_FILE_SIZE_BYTES,
+  ALLOWED_DOCUMENT_MIME_TYPES,
+  verifyFileMagicBytes,
+} from "@/lib/validation"
 
 /**
  * Handles document upload + analysis.
@@ -77,11 +82,41 @@ export async function POST(req: NextRequest) {
       }
 
       const file = entry
+
+      // Reject files that exceed the size limit before reading into memory
+      if (file.size > MAX_DOCUMENT_FILE_SIZE_BYTES) {
+        return NextResponse.json(
+          { error: `File "${file.name}" exceeds the 25 MB size limit` },
+          { status: 413 }
+        )
+      }
+
+      const contentType = (file.type || "").toLowerCase()
+
+      // Reject MIME types not on the allowlist
+      const mimeAllowed = [...ALLOWED_DOCUMENT_MIME_TYPES].some((allowed) =>
+        contentType.includes(allowed) || allowed.includes(contentType)
+      )
+      if (contentType && !mimeAllowed) {
+        return NextResponse.json(
+          { error: `File type "${contentType}" is not supported` },
+          { status: 415 }
+        )
+      }
+
       const arrayBuffer = await file.arrayBuffer()
       const buffer = Buffer.from(arrayBuffer)
 
       if (!buffer.length) {
         continue
+      }
+
+      // Verify the actual file bytes match the claimed MIME type (prevents spoofing)
+      if (contentType && !verifyFileMagicBytes(buffer, contentType)) {
+        return NextResponse.json(
+          { error: `File content does not match its declared type` },
+          { status: 415 }
+        )
       }
 
       const safeName = file.name.replace(/[^\w.\-]+/g, "_")
@@ -90,8 +125,6 @@ export async function POST(req: NextRequest) {
       // Extract text from document BEFORE uploading
       let extractedText = ""
       try {
-        const contentType = file.type || ""
-
         if (contentType.startsWith("text/") || contentType.includes("json")) {
           extractedText = buffer.toString("utf-8")
         } else if (contentType.includes("application/pdf")) {
