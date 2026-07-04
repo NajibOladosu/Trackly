@@ -93,7 +93,7 @@ export async function POST(req: NextRequest) {
             return new NextResponse("Document not found or forbidden", { status: 403 })
         }
 
-        const prompt = `You are an expert resume writer. Rewrite the following TipTap JSON resume to address the analysis recommendations and tailor it to the target role. Preserve the document STRUCTURE exactly: same number of nodes, same node types, same ordering, same heading levels, same list lengths. Only change the TEXT inside text nodes. Do NOT add, remove, or reorder nodes.
+        const prompt = `You are an expert resume writer following the Harvard (Mignone Center for Career Success) resume style. Revamp the following TipTap JSON resume to address the analysis recommendations and tailor it to the target role — WITHOUT changing the candidate's actual history. Preserve the document STRUCTURE exactly: same number of nodes, same node types, same ordering, same heading levels, same list lengths. Only change the TEXT inside text nodes. Do NOT add, remove, or reorder nodes.
 
 Target role: ${app.title || "Unknown"}${app.company ? ` at ${app.company}` : ""}
 Job description:
@@ -102,10 +102,21 @@ ${(app.job_description || "").slice(0, 6000)}
 Analysis recommendations to address:
 ${recommendations.map((r, i) => `${i + 1}. ${r}`).join("\n")}
 
-Rules:
-- Use strong action verbs and quantify achievements where possible.
-- Be ATS-friendly: include relevant keywords from the job description naturally.
-- Stay truthful: do not invent experience, employers, dates, or credentials. Rephrase only what is already there.
+TRUTHFULNESS RULES (non-negotiable — violating any of these is a failure):
+- This is the candidate's real history. Never invent employers, roles, dates, locations, degrees, schools, certifications, projects, or achievements.
+- Never fabricate numbers. Only use metrics, percentages, dollar amounts, team sizes, or scale indicators that already appear in the resume. If a bullet has no metric, improve the wording without adding one.
+- Understand what the candidate actually did in each role before rewriting it; every rewritten bullet must describe the same underlying work as the original.
+- Job titles may be reworded for clarity or alignment with the target role ONLY if the new title has the same meaning, scope, and seniority as the original (e.g. "Web Developer" -> "Frontend Engineer" is fine; "Engineer" -> "Engineering Manager" is not).
+- Weave in keywords from the job description naturally (for ATS), but only where the candidate's existing experience genuinely supports them. Never claim a skill, tool, or technology the resume does not already evidence.
+
+STYLE RULES (Harvard resume guidelines):
+- Start every experience bullet with a strong action verb (Led, Built, Reduced, Streamlined, Negotiated...). Never "Responsible for" or "Helped with".
+- Past tense for previous roles, present tense for the current role.
+- No personal pronouns (I, my, we).
+- Use the XYZ method where the facts allow: "Accomplished [X] as measured by [Y], by doing [Z]" — but only with a [Y] that already exists in the resume.
+- Keep bullets concise (one to two lines), specific, and free of empty buzzwords.
+
+OUTPUT RULES:
 - Keep formatting marks (bold/italic/underline) where they were.
 - Output ONLY a JSON object with this shape: { "contentJson": <full TipTap JSON document> }
 - Do NOT wrap in markdown code fences. Do NOT include any prose outside JSON.

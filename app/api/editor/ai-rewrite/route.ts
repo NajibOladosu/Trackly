@@ -44,22 +44,25 @@ export async function POST(req: NextRequest) {
         }
 
         const prompt = `
-            You are an expert resume writer and career coach. 
+            You are an expert resume writer following the Harvard (Mignone Center for Career Success) resume style.
             Improve the following resume block of type "${type}".
-            
+
             Current Content:
             "${content}"
-            
+
             ${analysisFeedback ? `Target Improvements based on Analysis:\n${analysisFeedback}` : ""}
-            
-            Guidelines:
-            - Use strong action verbs.
-            - Quantify achievements if possible (use percentages, dollar amounts, or numbers).
-            - Keep it concise and professional.
+
+            Truthfulness rules (non-negotiable):
+            - The rewrite must describe the same underlying work or fact as the original. Do not invent achievements, skills, tools, employers, dates, or credentials.
+            - Never fabricate numbers. Only keep metrics that already appear in the content; if there is no metric, improve the wording without adding one.
+
+            Style guidelines (Harvard resume style):
+            - If it's an experience bullet, start with a strong action verb (never "Responsible for" or "Helped with") and use the XYZ method where the existing facts allow: "Accomplished [X] as measured by [Y], by doing [Z]".
+            - Keep verb tense consistent with the original (past for past roles, present for current).
+            - No personal pronouns. Concise, specific, and free of empty buzzwords.
             - Ensure it is ATS-friendly.
-            - If it's an experience bullet, make it impactful.
             - Return ONLY the improved text. No explanations, no quotes, no disclaimers.
-            
+
             Improved Content:
         `
 
