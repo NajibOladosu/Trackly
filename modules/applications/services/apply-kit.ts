@@ -3,14 +3,17 @@ import type { ParsedJob } from '@/shared/infrastructure/ai'
 
 export type { ParsedJob } from '@/shared/infrastructure/ai'
 
-export interface FitResult {
+/** Matches the shape returned by POST /api/applications/analyze (analyzeResumeMatch). */
+export interface ResumeAnalysisResult {
   score: number
-  tips: string[]
+  matchingKeywords: string[]
   missingKeywords: string[]
-  summary: string
+  strengths: string[]
+  weaknesses: string[]
+  recommendations: string[]
 }
 
-export type StepName = 'job' | 'fit' | 'coverLetter'
+export type StepName = 'job' | 'analysis' | 'coverLetter'
 export type StepStatus = 'loading' | 'done' | 'error'
 
 export interface StepEvent {
@@ -24,10 +27,15 @@ export interface ApplyKitInput {
   text?: string
 }
 
+export interface ApplyKitOptions {
+  analysis: boolean
+  coverLetter: boolean
+}
+
 export interface ApplyKitResult {
   applicationId: string
   job: ParsedJob
-  fit: FitResult | null
+  analysis: ResumeAnalysisResult | null
   coverLetter: string | null
 }
 
@@ -35,7 +43,7 @@ export interface ApplyKitClient {
   parseJob(input: ApplyKitInput): Promise<ParsedJob>
   createApplication(job: ParsedJob, sourceUrl: string | null): Promise<string>
   linkDocument(applicationId: string, documentId: string): Promise<void>
-  scoreFit(jobDescription: string, documentId: string): Promise<FitResult>
+  analyzeResume(applicationId: string, documentId: string): Promise<ResumeAnalysisResult>
   generateCoverLetter(applicationId: string): Promise<string | null>
 }
 
@@ -44,13 +52,15 @@ function errMessage(e: unknown): string {
 }
 
 /**
- * Sequence: parse -> create application -> link resume -> fit -> cover letter.
- * Parse failure aborts (nothing created). After the application exists, a fit or
+ * Sequence: parse -> create application -> link resume -> analysis -> cover letter.
+ * The analysis and cover-letter steps only run when selected in `options`.
+ * Parse failure aborts (nothing created). After the application exists, an analysis or
  * cover-letter failure is reported via onProgress but does not discard earlier results.
  */
 export async function runApplyKit(
   input: ApplyKitInput,
   documentId: string,
+  options: ApplyKitOptions,
   client: ApplyKitClient,
   onProgress: (event: StepEvent) => void
 ): Promise<ApplyKitResult> {
@@ -68,22 +78,26 @@ export async function runApplyKit(
   const applicationId = await client.createApplication(job, sourceUrl)
   await client.linkDocument(applicationId, documentId)
 
-  const result: ApplyKitResult = { applicationId, job, fit: null, coverLetter: null }
+  const result: ApplyKitResult = { applicationId, job, analysis: null, coverLetter: null }
 
-  onProgress({ step: 'fit', status: 'loading' })
-  try {
-    result.fit = await client.scoreFit(job.job_description, documentId)
-    onProgress({ step: 'fit', status: 'done' })
-  } catch (e) {
-    onProgress({ step: 'fit', status: 'error', error: errMessage(e) })
+  if (options.analysis) {
+    onProgress({ step: 'analysis', status: 'loading' })
+    try {
+      result.analysis = await client.analyzeResume(applicationId, documentId)
+      onProgress({ step: 'analysis', status: 'done' })
+    } catch (e) {
+      onProgress({ step: 'analysis', status: 'error', error: errMessage(e) })
+    }
   }
 
-  onProgress({ step: 'coverLetter', status: 'loading' })
-  try {
-    result.coverLetter = await client.generateCoverLetter(applicationId)
-    onProgress({ step: 'coverLetter', status: 'done' })
-  } catch (e) {
-    onProgress({ step: 'coverLetter', status: 'error', error: errMessage(e) })
+  if (options.coverLetter) {
+    onProgress({ step: 'coverLetter', status: 'loading' })
+    try {
+      result.coverLetter = await client.generateCoverLetter(applicationId)
+      onProgress({ step: 'coverLetter', status: 'done' })
+    } catch (e) {
+      onProgress({ step: 'coverLetter', status: 'error', error: errMessage(e) })
+    }
   }
 
   return result
@@ -92,7 +106,8 @@ export async function runApplyKit(
 /**
  * Default browser/fetch-backed client. Uses the Supabase browser client for
  * application creation + document linking (RLS scopes to the user), and the
- * existing API routes for parse, fit, and cover-letter generation.
+ * existing feature API routes for parse, analysis, and cover-letter generation,
+ * so results persist exactly as if each feature was used individually.
  */
 export function createApplyKitClient(): ApplyKitClient {
   const supabase = createClient()
@@ -142,16 +157,13 @@ export function createApplyKitClient(): ApplyKitClient {
       }
     },
 
-    async scoreFit(jobDescription, documentId) {
-      const res = await postJson('/api/ai/compatibility', { jobDescription, documentId })
+    async analyzeResume(applicationId, documentId) {
+      // Same route the Analysis tab uses: persists to document_analyses and updates
+      // applications.last_analyzed_document_id, so the result shows up on the tab.
+      const res = await postJson('/api/applications/analyze', { applicationId, documentId })
       const json = await res.json()
-      if (!res.ok) throw new Error(json.error || 'Failed to score fit.')
-      return {
-        score: typeof json.score === 'number' ? json.score : 0,
-        tips: Array.isArray(json.tips) ? json.tips : [],
-        missingKeywords: Array.isArray(json.missingKeywords) ? json.missingKeywords : [],
-        summary: typeof json.summary === 'string' ? json.summary : '',
-      }
+      if (!res.ok) throw new Error(json.error || 'Failed to analyze resume.')
+      return json.analysis as ResumeAnalysisResult
     },
 
     async generateCoverLetter(applicationId) {
