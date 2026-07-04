@@ -3,6 +3,7 @@ import { createClient } from '@/shared/db/supabase/server'
 import { evaluateInterviewAnswer } from '@/shared/infrastructure/ai'
 import { createAnswer, getInterviewQuestion } from '@/modules/interviews/services/interview.service'
 import { rateLimitMiddleware, RATE_LIMITS } from '@/lib/middleware/rate-limit'
+import { validateString, MAX_LENGTHS } from '@/lib/validation'
 
 export const dynamic = 'force-dynamic'
 
@@ -69,6 +70,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Answer text cannot be empty' }, { status: 400 })
     }
 
+    const answerErr = validateString(answerText, 'answerText', { maxLength: MAX_LENGTHS.answerText })
+    if (answerErr) return NextResponse.json({ error: answerErr }, { status: 400 })
+
     // Fetch question with verification
     const question = await getInterviewQuestion(questionId, supabase)
 
@@ -124,7 +128,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error submitting interview answer:', error)
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to submit answer' },
+      { error: 'Failed to submit answer' },
       { status: 500 }
     )
   }

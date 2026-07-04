@@ -103,7 +103,7 @@ export async function POST(req: NextRequest) {
     } catch (error) {
         console.error("[PDF Export] Error:", error)
         return new NextResponse(
-            JSON.stringify({ error: error instanceof Error ? error.message : "PDF export failed" }),
+            JSON.stringify({ error: "PDF export failed" }),
             { status: 500, headers: { "Content-Type": "application/json" } },
         )
     }

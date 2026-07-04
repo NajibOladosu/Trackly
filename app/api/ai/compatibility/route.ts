@@ -3,6 +3,7 @@ import { callGeminiWithFallback } from "@/shared/infrastructure/ai"
 import { createClient } from "@/shared/db/supabase/server"
 import { getAnalyzedDocuments, buildContextFromDocument } from "@/modules/documents/services/document.service"
 import { rateLimitMiddleware, RATE_LIMITS } from "@/lib/middleware/rate-limit"
+import { MAX_LENGTHS } from "@/lib/validation"
 
 export const dynamic = 'force-dynamic'
 
@@ -22,6 +23,13 @@ export async function POST(req: NextRequest) {
 
         if (!jobDescription) {
             return NextResponse.json({ error: "Missing job description" }, { status: 400 })
+        }
+
+        if (typeof jobDescription !== 'string' || jobDescription.length > MAX_LENGTHS.jobDescription) {
+            return NextResponse.json(
+                { error: `jobDescription exceeds maximum length of ${MAX_LENGTHS.jobDescription} characters` },
+                { status: 400 }
+            )
         }
 
         let resumeContext = ""
@@ -104,6 +112,6 @@ export async function POST(req: NextRequest) {
 
     } catch (e) {
         console.error('Compatibility check error:', e)
-        return NextResponse.json({ error: e instanceof Error ? e.message : 'Internal Server Error' }, { status: 500 })
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
     }
 }

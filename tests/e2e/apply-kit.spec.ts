@@ -60,7 +60,7 @@ test.afterEach(async () => {
 })
 
 test.describe('Apply Kit', () => {
-  test('paste JD produces application, fit, and cover letter cards', async ({ context, page }) => {
+  test('paste JD produces application, analysis, and cover letter cards', async ({ context, page }) => {
     await loginAs(context, user)
     await page.goto('/apply')
 
@@ -80,13 +80,17 @@ test.describe('Apply Kit', () => {
       'Requirements: 5+ years backend experience, distributed systems, REST APIs.'
     )
 
+    // Both generation items are selectable and checked by default
+    await expect(page.getByLabel('Resume analysis')).toBeChecked()
+    await expect(page.getByLabel('Cover letter')).toBeChecked()
+
     await page.getByRole('button', { name: /generate apply kit/i }).click()
 
     // Application card appears first
     await expect(page.getByRole('heading', { name: 'Application' })).toBeVisible({ timeout: 30_000 })
 
-    // Resume Fit card
-    await expect(page.getByRole('heading', { name: 'Resume Fit' })).toBeVisible({ timeout: 30_000 })
+    // Resume Analysis card
+    await expect(page.getByRole('heading', { name: 'Resume Analysis' })).toBeVisible({ timeout: 30_000 })
 
     // "Open application" link appears once the application row is created
     await expect(page.getByRole('link', { name: /open application/i })).toBeVisible({ timeout: 60_000 })

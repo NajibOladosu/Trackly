@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/shared/db/supabase/server'
 import { rateLimitMiddleware, RATE_LIMITS } from '@/lib/middleware/rate-limit'
+import { validateString, MAX_LENGTHS } from '@/lib/validation'
 
 export const dynamic = 'force-dynamic'
 
@@ -55,6 +56,12 @@ export async function POST(request: NextRequest) {
     if (!applicationId || !content) {
       return NextResponse.json({ error: 'applicationId and content are required' }, { status: 400 })
     }
+
+    const contentErr = validateString(content, 'content', { maxLength: MAX_LENGTHS.noteContent })
+    if (contentErr) return NextResponse.json({ error: contentErr }, { status: 400 })
+
+    const categoryErr = validateString(category, 'category', { required: false, maxLength: MAX_LENGTHS.category })
+    if (categoryErr) return NextResponse.json({ error: categoryErr }, { status: 400 })
 
     // Verify the application belongs to the user
     const { data: app, error: appError } = await supabase

@@ -143,7 +143,7 @@ export async function POST(req: NextRequest) {
     } catch (error) {
         console.error('Error in resume analysis:', error)
         return NextResponse.json(
-            { error: error instanceof Error ? error.message : 'Failed to analyze resume' },
+            { error: 'Failed to analyze resume' },
             { status: 500 }
         )
     }

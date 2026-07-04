@@ -13,7 +13,7 @@ import {
   runApplyKit,
   createApplyKitClient,
   type StepStatus,
-  type FitResult,
+  type ResumeAnalysisResult,
   type ApplyKitInput,
 } from "@/modules/applications/services/apply-kit"
 
@@ -30,15 +30,17 @@ export function ApplyKitScreen() {
   const [documentId, setDocumentId] = useState<string>("")
   const [running, setRunning] = useState(false)
 
+  const [wantAnalysis, setWantAnalysis] = useState(true)
+  const [wantCoverLetter, setWantCoverLetter] = useState(true)
+
   const [applicationId, setApplicationId] = useState<string | null>(null)
   const [jobTitle, setJobTitle] = useState<string | null>(null)
   const [jobCompany, setJobCompany] = useState<string | null>(null)
-  const [jobDescription, setJobDescription] = useState("")
 
   const [jobStatus, setJobStatus] = useState<StepStatus | "idle">("idle")
-  const [fitStatus, setFitStatus] = useState<StepStatus | "idle">("idle")
+  const [analysisStatus, setAnalysisStatus] = useState<StepStatus | "idle">("idle")
   const [coverStatus, setCoverStatus] = useState<StepStatus | "idle">("idle")
-  const [fit, setFit] = useState<FitResult | null>(null)
+  const [analysis, setAnalysis] = useState<ResumeAnalysisResult | null>(null)
   const [coverLetter, setCoverLetter] = useState<string | null>(null)
 
   useEffect(() => {
@@ -55,11 +57,10 @@ export function ApplyKitScreen() {
     setApplicationId(null)
     setJobTitle(null)
     setJobCompany(null)
-    setJobDescription("")
     setJobStatus("idle")
-    setFitStatus("idle")
+    setAnalysisStatus("idle")
     setCoverStatus("idle")
-    setFit(null)
+    setAnalysis(null)
     setCoverLetter(null)
   }
 
@@ -74,22 +75,27 @@ export function ApplyKitScreen() {
 
     let jobErrored = false
     try {
-      const result = await runApplyKit(input, documentId, client, (e) => {
-        if (e.step === "job") {
-          setJobStatus(e.status)
-          if (e.status === "error") {
-            jobErrored = true
-            toast({ title: "Couldn't read the job", description: e.error, variant: "destructive" })
+      const result = await runApplyKit(
+        input,
+        documentId,
+        { analysis: wantAnalysis, coverLetter: wantCoverLetter },
+        client,
+        (e) => {
+          if (e.step === "job") {
+            setJobStatus(e.status)
+            if (e.status === "error") {
+              jobErrored = true
+              toast({ title: "Couldn't read the job", description: e.error, variant: "destructive" })
+            }
           }
+          if (e.step === "analysis") setAnalysisStatus(e.status)
+          if (e.step === "coverLetter") setCoverStatus(e.status)
         }
-        if (e.step === "fit") setFitStatus(e.status)
-        if (e.step === "coverLetter") setCoverStatus(e.status)
-      })
+      )
       setApplicationId(result.applicationId)
       setJobTitle(result.job.title)
       setJobCompany(result.job.company)
-      setJobDescription(result.job.job_description)
-      setFit(result.fit)
+      setAnalysis(result.analysis)
       setCoverLetter(result.coverLetter)
     } catch (e) {
       if (!jobErrored) {
@@ -100,16 +106,16 @@ export function ApplyKitScreen() {
     }
   }
 
-  async function retryFit() {
-    if (!jobDescription) return
-    setFitStatus("loading")
+  async function retryAnalysis() {
+    if (!applicationId) return
+    setAnalysisStatus("loading")
     try {
-      const r = await client.scoreFit(jobDescription, documentId)
-      setFit(r)
-      setFitStatus("done")
+      const r = await client.analyzeResume(applicationId, documentId)
+      setAnalysis(r)
+      setAnalysisStatus("done")
     } catch (e) {
-      setFitStatus("error")
-      toast({ title: "Fit retry failed", description: e instanceof Error ? e.message : undefined, variant: "destructive" })
+      setAnalysisStatus("error")
+      toast({ title: "Analysis retry failed", description: e instanceof Error ? e.message : undefined, variant: "destructive" })
     }
   }
 
@@ -130,7 +136,7 @@ export function ApplyKitScreen() {
     <div className="mx-auto max-w-3xl space-y-6">
       <div>
         <h1 className="text-2xl font-semibold">One-Click Apply Kit</h1>
-        <p className="text-muted-foreground text-sm">Paste a job link or description, pick a resume, and generate your application, fit score, and cover letter.</p>
+        <p className="text-muted-foreground text-sm">Paste a job link or description, pick a resume, choose what to generate, and go.</p>
       </div>
 
       <Card>
@@ -187,6 +193,33 @@ export function ApplyKitScreen() {
             )}
           </div>
 
+          <fieldset>
+            <legend className="mb-1 block text-sm font-medium">Generate</legend>
+            <div className="flex flex-col gap-2 sm:flex-row sm:gap-6">
+              <label htmlFor="want-analysis" className="flex items-center gap-2 text-sm">
+                <input
+                  id="want-analysis"
+                  type="checkbox"
+                  checked={wantAnalysis}
+                  onChange={(e) => setWantAnalysis(e.target.checked)}
+                  className="h-4 w-4 rounded border"
+                />
+                Resume analysis
+              </label>
+              <label htmlFor="want-cover-letter" className="flex items-center gap-2 text-sm">
+                <input
+                  id="want-cover-letter"
+                  type="checkbox"
+                  checked={wantCoverLetter}
+                  onChange={(e) => setWantCoverLetter(e.target.checked)}
+                  className="h-4 w-4 rounded border"
+                />
+                Cover letter
+              </label>
+            </div>
+            <p className="text-muted-foreground mt-1 text-xs">The application is always created and saved. Selected items are generated and saved to it, just like running each feature individually.</p>
+          </fieldset>
+
           <Button onClick={handleGenerate} disabled={running || docsLoading || docs.length === 0} className="w-full">
             {running ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating…</> : "Generate Apply Kit"}
           </Button>
@@ -213,26 +246,31 @@ export function ApplyKitScreen() {
         </Card>
       )}
 
-      {fitStatus !== "idle" && (
+      {analysisStatus !== "idle" && (
         <Card>
-          <CardHeader><CardTitle className="text-base">Resume Fit</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-base">Resume Analysis</CardTitle></CardHeader>
           <CardContent>
-            {fitStatus === "loading" && <Loader2 className="h-4 w-4 animate-spin" />}
-            {fitStatus === "done" && fit && (
+            {analysisStatus === "loading" && <Loader2 className="h-4 w-4 animate-spin" />}
+            {analysisStatus === "done" && analysis && (
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-2xl font-semibold">{fit.score}%</span>
-                  <span className="text-muted-foreground text-sm">{fit.summary}</span>
+                  <span className="text-2xl font-semibold">{analysis.score}/100</span>
+                  <span className="text-muted-foreground text-sm">match score</span>
                 </div>
-                {fit.missingKeywords.length > 0 && (
+                {analysis.missingKeywords.length > 0 && (
                   <div className="flex flex-wrap gap-1">
-                    {fit.missingKeywords.map((k) => <Badge key={k} variant="outline">{k}</Badge>)}
+                    {analysis.missingKeywords.map((k) => <Badge key={k} variant="outline">{k}</Badge>)}
                   </div>
+                )}
+                {applicationId && (
+                  <Link href={`/applications/${applicationId}?tab=analysis`} className="inline-flex items-center text-sm underline">
+                    View full analysis <ExternalLink className="ml-1 h-3 w-3" />
+                  </Link>
                 )}
               </div>
             )}
-            {fitStatus === "error" && (
-              <Button variant="outline" size="sm" onClick={retryFit}><RefreshCw className="mr-2 h-4 w-4" /> Retry fit</Button>
+            {analysisStatus === "error" && (
+              <Button variant="outline" size="sm" onClick={retryAnalysis}><RefreshCw className="mr-2 h-4 w-4" /> Retry analysis</Button>
             )}
           </CardContent>
         </Card>
@@ -247,7 +285,7 @@ export function ApplyKitScreen() {
               coverLetter ? (
                 <div className="space-y-2">
                   <p className="whitespace-pre-wrap text-sm">{coverLetter}</p>
-                  {applicationId && <Link href={`/applications/${applicationId}`} className="text-sm underline">Edit in application</Link>}
+                  {applicationId && <Link href={`/applications/${applicationId}?tab=cover-letter`} className="text-sm underline">Edit in application</Link>}
                 </div>
               ) : (
                 <p className="text-sm text-muted-foreground">No cover letter was generated.</p>
