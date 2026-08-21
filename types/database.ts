@@ -49,6 +49,7 @@ export interface Application {
   ai_cover_letter: string | null
   manual_cover_letter: string | null
   last_analyzed_document_id: string | null
+  archived: boolean
   created_at: string
   updated_at: string
 }
