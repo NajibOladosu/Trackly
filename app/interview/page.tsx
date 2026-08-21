@@ -15,6 +15,7 @@ import {
   BarChart3,
   Loader2,
   RefreshCcw,
+  Sparkles,
 } from "lucide-react"
 import Link from "next/link"
 import type { InterviewSession, Application } from "@/types/database"
@@ -168,14 +169,22 @@ export default function InterviewPage() {
     <DashboardLayout>
       <div className="space-y-6">
         {/* Header */}
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2">
-            <Mic className="h-8 w-8" />
-            Interview Practice
-          </h1>
-          <p className="text-muted-foreground mt-2">
-            Track your interview preparation progress across all applications
-          </p>
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2">
+              <Mic className="h-8 w-8" />
+              Interview Practice
+            </h1>
+            <p className="text-muted-foreground mt-2">
+              Track your interview preparation progress across all applications
+            </p>
+          </div>
+          <Link href="/interview/star" className="w-full sm:w-auto">
+            <Button variant="outline" className="w-full sm:w-auto">
+              <Sparkles className="mr-2 h-4 w-4" />
+              STAR Answer Builder
+            </Button>
+          </Link>
         </div>
 
         {sessions.length === 0 ? (
