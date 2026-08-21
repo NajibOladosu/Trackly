@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { Button } from "@/shared/ui/button"
@@ -12,7 +13,7 @@ export default function PrivacyPolicy() {
       <nav className="fixed top-0 w-full z-50 border-b border-border bg-background/80 backdrop-blur-xl">
         <div className="container mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center space-x-2">
-            <img src="/ApplyOS%20Logo.webp" alt="ApplyOS" className="h-8 w-auto" />
+            <Image src="/ApplyOS%20Logo.webp" alt="ApplyOS" width={1073} height={1000} className="h-8 w-auto" />
             <span className="text-xl font-bold font-mono">
               <span className="text-primary">Apply</span>
               <span className="text-foreground">OS</span>

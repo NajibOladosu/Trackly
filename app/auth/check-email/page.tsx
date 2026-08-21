@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import { useState, Suspense } from "react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
@@ -55,7 +56,7 @@ function CheckEmailContent() {
         <div className="text-center mb-8">
           <Link href="/" className="inline-block">
             <div className="flex items-center justify-center space-x-2 mb-4">
-              <img src="/ApplyOS%20Logo.webp" alt="ApplyOS" className="h-12 w-auto" />
+              <Image src="/ApplyOS%20Logo.webp" alt="ApplyOS" width={1073} height={1000} className="h-12 w-auto" />
               <span className="text-3xl font-bold font-mono">
                 <span className="text-primary">Apply</span>
                 <span className="text-foreground">OS</span>

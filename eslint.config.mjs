@@ -34,6 +34,13 @@ const eslintConfig = [
     },
   },
   {
+    // Email templates render to static HTML; next/image does not apply
+    files: ["emails/**/*.{ts,tsx}"],
+    rules: {
+      "@next/next/no-img-element": "off",
+    },
+  },
+  {
     files: ["tests/**/*.{ts,tsx}", "**/*.test.{ts,tsx}", "**/__tests__/**/*.{ts,tsx}"],
     rules: {
       "@typescript-eslint/no-explicit-any": "off",
