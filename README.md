@@ -4,13 +4,14 @@ ApplyOS is an AI-assisted job and scholarship application manager. It combines a
 
 ## What it does
 
-- Track applications, deadlines, priorities, status history, documents, and rich notes.
+- Track applications, deadlines, priorities, status history, documents, and rich notes; archive rejected/withdrawn applications and run bulk actions.
 - Upload PDF, DOCX, text, and JSON documents for extraction and AI analysis.
 - Create tailored cover letters, extract application questions, and generate grounded answers.
 - Run the Apply Kit: parse a job posting, analyse resume compatibility, and create application materials in one flow.
 - Edit resumes with templates, AI rewrite support, document settings, version history, and PDF/DOCX export.
 - Practise text, voice, resume-grill, company-prep, and conversational interviews with feedback and reports.
-- View application metrics, conversion funnels, timelines, and status-flow visualisations.
+- View application metrics, conversion funnels, timelines, and status-flow visualisations, plus an activity streak, weekly goal, and contribution heatmap.
+- Score resume-to-job fit per application (match score, improvement tips, missing keywords).
 - Receive welcome, status, deadline, and weekly-digest emails through Resend.
 - Publish MDX blog posts via `blog.applyos.io` subdomain routing and an automated PR workflow.
 

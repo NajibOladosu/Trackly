@@ -34,6 +34,7 @@ import type { Application, Question, Document, ApplicationNote } from "@/types/d
 import { getApplication, updateApplication, getApplicationDocuments, updateApplicationDocuments, getApplicationDocumentDetails } from "@/modules/applications/services/application.service"
 import { getQuestionsByApplicationId, updateQuestion, deleteQuestion, createQuestion } from "@/modules/interviews/services/question.service"
 import { getDocuments } from "@/modules/documents/services/document.service"
+import { JobFitCard } from "@/modules/applications/components/job-fit-card"
 import { getNotesByApplicationId, createNote, updateNote, deleteNote, togglePinNote } from "@/modules/notes/services/note.service"
 import { getInterviewSessions, deleteInterviewSession } from "@/modules/interviews/services/interview.service"
 import { EditApplicationModal } from "@/modules/applications/components/modals/edit-application-modal"
@@ -994,7 +995,7 @@ export default function ApplicationDetailPage() {
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="flex justify-center mb-6">
-            <TabsList className="grid grid-cols-5 w-full sm:w-auto">
+            <TabsList className="grid grid-cols-6 w-full sm:w-auto">
               <TabsTrigger
                 value="questions"
                 className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
@@ -1012,6 +1013,12 @@ export default function ApplicationDetailPage() {
                 className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
               >
                 Analysis
+              </TabsTrigger>
+              <TabsTrigger
+                value="job-fit"
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
+                Job Fit
               </TabsTrigger>
               <TabsTrigger
                 value="notes"
@@ -1297,6 +1304,14 @@ export default function ApplicationDetailPage() {
             <AnalysisTab
               application={application}
               documents={documents.filter(d => selectedDocumentIds.includes(d.id))}
+            />
+          </TabsContent>
+
+          {/* Job Fit Tab */}
+          <TabsContent value="job-fit" className="mt-6">
+            <JobFitCard
+              jobDescription={application.job_description}
+              documentId={selectedDocumentIds[0]}
             />
           </TabsContent>
 

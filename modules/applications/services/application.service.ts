@@ -87,6 +87,16 @@ export async function deleteApplications(ids: string[]) {
   if (error) throw error
 }
 
+export async function setApplicationArchived(id: string, archived: boolean) {
+  const supabase = createClient()
+  const { error } = await supabase
+    .from('applications')
+    .update({ archived })
+    .eq('id', id)
+
+  if (error) throw error
+}
+
 export async function updateApplicationsStatus(ids: string[], status: ApplicationStatus) {
   if (ids.length === 0) return
   const supabase = createClient()

@@ -17,6 +17,8 @@ import {
   Trash2,
   ExternalLink,
   Loader2,
+  Archive,
+  ArchiveRestore,
 } from "lucide-react"
 import Link from "next/link"
 import {
@@ -24,6 +26,7 @@ import {
   deleteApplication,
   deleteApplications,
   updateApplicationsStatus,
+  setApplicationArchived,
 } from "@/modules/applications/services/application.service"
 import type { Application, ApplicationStatus } from "@/types/database"
 import { AddApplicationModal } from "@/modules/applications/components/modals/add-application-modal"
@@ -152,6 +155,26 @@ export default function ApplicationsPage() {
     }
   }
 
+  const handleArchiveToggle = async (id: string, archived: boolean) => {
+    // Optimistic: drop it from the current view immediately.
+    setApplications((apps) =>
+      apps.map((a) => (a.id === id ? { ...a, archived } : a))
+    )
+    try {
+      await setApplicationArchived(id, archived)
+    } catch (error) {
+      console.error('Archive toggle failed:', error)
+      setApplications((apps) =>
+        apps.map((a) => (a.id === id ? { ...a, archived: !archived } : a))
+      )
+      setDeleteError(
+        archived
+          ? 'Failed to archive the application. Please try again.'
+          : 'Failed to restore the application. Please try again.'
+      )
+    }
+  }
+
   const handleBulkStatusChange = async (status: ApplicationStatus) => {
     const ids = Array.from(selectedIds)
     setBulkLoading(true)
@@ -174,6 +197,12 @@ export default function ApplicationsPage() {
       const matchesSearch =
         app.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (app.company && app.company.toLowerCase().includes(searchQuery.toLowerCase()))
+      // Archive tab shows only archived; every other tab excludes archived
+      // so the active pipeline stays uncluttered.
+      if (selectedStatus === "archive") {
+        return matchesSearch && app.archived
+      }
+      if (app.archived) return false
       const matchesStatus = selectedStatus === "all" || app.status === selectedStatus
       return matchesSearch && matchesStatus
     })
@@ -277,6 +306,14 @@ export default function ApplicationsPage() {
                   size="sm"
                 >
                   Interview
+                </Button>
+                <Button
+                  variant={selectedStatus === "archive" ? "default" : "outline"}
+                  onClick={() => setSelectedStatus("archive")}
+                  size="sm"
+                >
+                  <Archive className="mr-1.5 h-3.5 w-3.5" />
+                  Archive
                 </Button>
                 </div>
 
@@ -447,6 +484,20 @@ export default function ApplicationsPage() {
                           <Link href={`/applications/${app.id}`}>
                             <Eye className="h-4 w-4" />
                           </Link>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-9 w-9"
+                          onClick={() => handleArchiveToggle(app.id, !app.archived)}
+                          aria-label={app.archived ? `Restore ${app.title}` : `Archive ${app.title}`}
+                          title={app.archived ? "Restore to active" : "Archive"}
+                        >
+                          {app.archived ? (
+                            <ArchiveRestore className="h-4 w-4" />
+                          ) : (
+                            <Archive className="h-4 w-4" />
+                          )}
                         </Button>
                         <Button
                           variant="ghost"
