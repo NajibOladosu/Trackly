@@ -1,6 +1,6 @@
 import { createClient } from '@/shared/db/supabase/client'
 import type { SupabaseClient } from '@supabase/supabase-js'
-import type { ConversationTurn, ConversationTurnMetadata, InterviewSession, InterviewQuestion } from '@/types/database'
+import type { ConversationTurn, ConversationTurnMetadata, InterviewQuestion } from '@/types/database'
 
 // ============================================================================
 // CONVERSATION TURNS

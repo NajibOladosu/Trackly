@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/sha
 import { Button } from "@/shared/ui/button"
 import { Input } from "@/shared/ui/input"
 import { Badge } from "@/shared/ui/badge"
-import { User, Mail, Calendar, Github, Linkedin, Loader2, Edit2, Upload, Download } from "lucide-react"
+import { User, Mail, Calendar, Github, Linkedin, Loader2, Edit2, Upload } from "lucide-react"
 import { createClient } from "@/shared/db/supabase/client"
 import type { User as SupabaseUser } from "@supabase/supabase-js"
 import { PromptModal } from "@/components/modals/prompt-modal"

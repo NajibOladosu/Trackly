@@ -286,7 +286,7 @@ export async function GET(request: Request) {
     try {
       const requestUrl = new URL(request.url)
       origin = requestUrl.origin
-    } catch (e) {
+    } catch {
       // If URL parsing fails, use default
     }
     const errorResponse = NextResponse.redirect(new URL('/auth/login?error=callback', origin + '/'))

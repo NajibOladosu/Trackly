@@ -21,7 +21,6 @@ export function NotesCardView({
   onEdit,
   onDelete,
   onTogglePin,
-  isLoading = false,
 }: NotesCardViewProps) {
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [pinningId, setPinningId] = useState<string | null>(null)

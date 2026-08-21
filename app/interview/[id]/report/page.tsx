@@ -1,13 +1,13 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useParams, useRouter } from "next/navigation"
+import { useParams } from "next/navigation"
 import { DashboardLayout } from "@/components/layout/dashboard-layout"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/shared/ui/card"
 import { Button } from "@/shared/ui/button"
 import { Badge } from "@/shared/ui/badge"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/shared/ui/accordion"
-import { ArrowLeft, Mic, Calendar, Clock, Target, Loader2, CheckCircle, XCircle, Lightbulb } from "lucide-react"
+import { ArrowLeft, Mic, Target, Loader2, CheckCircle, XCircle, Lightbulb } from "lucide-react"
 import Link from "next/link"
 import type { InterviewSession, InterviewQuestion, InterviewAnswer, Application } from "@/types/database"
 import { getInterviewSession, getQuestionsForSession, getAnswersForSession } from "@/modules/interviews/services/interview.service"
@@ -84,7 +84,6 @@ function aggregateWeaknesses(answersMap: Map<string, InterviewAnswer>): string[]
 
 export default function InterviewReportPage() {
   const params = useParams()
-  const router = useRouter()
   const sessionId = params?.id as string | undefined
 
   const [session, setSession] = useState<InterviewSession | null>(null)

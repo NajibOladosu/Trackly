@@ -1,7 +1,6 @@
 import 'server-only'
 import type { DocumentReport } from '@/types/database'
 import ModelManager, { AIRateLimitError } from '@/shared/infrastructure/ai/model-manager'
-import { queueManager } from '@/shared/infrastructure/ai/queue-manager'
 import { getGenerativeModel, isGeminiConfigured } from '@/shared/infrastructure/ai/client'
 import { classifyError, logAICall } from '@/shared/infrastructure/ai/telemetry'
 
@@ -1310,7 +1309,6 @@ export async function evaluateInterviewAnswer(params: {
   const { question, answer, questionCategory, idealOutline, evaluationCriteria, answerType } = params
 
   const isBehavioral = questionCategory.startsWith('behavioral')
-  const isTechnical = questionCategory.startsWith('technical')
 
   const prompt = `You are an expert interviewer evaluating a candidate's answer to an interview question.
 

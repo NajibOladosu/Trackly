@@ -1,4 +1,3 @@
-import { createClient } from '@/shared/db/supabase/server'
 import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
 import { render } from '@react-email/render'
@@ -30,7 +29,7 @@ export async function POST(request: NextRequest) {
         const adminClient = createAdminClient<Database>(supabaseUrl, supabaseServiceKey)
 
         // 1. Get the user's name or fallback to part of email
-        const { data: users, error: userError } = await adminClient
+        const { data: users } = await adminClient
             .from('users')
             .select('name')
             .eq('email', email)

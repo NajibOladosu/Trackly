@@ -6,7 +6,6 @@ import { Button } from '@/shared/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card'
 import { Badge } from '@/shared/ui/badge'
 import { GeminiLiveClient } from '@/lib/gemini-live/client'
-import { convertToGeminiFormat, convertFromGeminiFormat } from '@/lib/gemini-live/audio-processor'
 import type { ConnectionState, ContentPart } from '@/lib/gemini-live/types'
 
 interface TestTurn {
@@ -39,7 +38,6 @@ export default function TestLivePage() {
   const mediaRecorderRef = useRef<ScriptProcessorNode | null>(null)
   const audioContextRef = useRef<AudioContext | null>(null)
   const streamRef = useRef<MediaStream | null>(null)
-  const userAudioBufferRef = useRef<string>('') // Buffer user speech
 
   // Audio playback queue
   const playbackContextRef = useRef<AudioContext | null>(null)

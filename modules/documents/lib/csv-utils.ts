@@ -83,7 +83,7 @@ function parseCSV(csvText: string): { headers: string[]; rows: string[][] } | nu
     }
 
     return { headers, rows }
-  } catch (error) {
+  } catch {
     return null
   }
 }
@@ -113,11 +113,6 @@ function parseCSVLine(line: string): string[] {
 
   result.push(current.trim().replace(/^["']|["']$/g, ''))
   return result
-}
-
-function isValidDate(dateString: string): boolean {
-  const date = new Date(dateString)
-  return !isNaN(date.getTime())
 }
 
 function parseDate(dateString: string): string | null {

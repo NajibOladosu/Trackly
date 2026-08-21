@@ -111,7 +111,6 @@ export async function uploadDocument(file: File) {
   const fileName = `${user.id}/${Date.now()}_${file.name}`
 
   const {
-    data: uploadData,
     error: uploadError,
   } = await supabase.storage.from("documents").upload(fileName, file)
 

@@ -6,16 +6,13 @@ import type {
   InterviewAnswer,
   CompanyTemplate,
   SessionType,
-  SessionStatus,
   InterviewDifficulty,
   AnswerType,
   QuestionCategory,
   IdealAnswerOutline,
   EvaluationCriteria,
   InterviewFeedback,
-  ConversationTurn,
 } from '@/types/database'
-import { getConversationTurns as getConversationTurnsFromService } from './conversation.service'
 
 // Re-export conversation functions
 export { getConversationTurns } from './conversation.service'

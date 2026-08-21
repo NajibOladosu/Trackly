@@ -70,9 +70,7 @@ const detectSourceFormat = (fileName: string): SourceFormat => {
 }
 
 export function ResumeEditor({
-    documentUrl,
     analysis,
-    parsedData,
     extractedText,
     applicationId,
     documentId,
@@ -432,7 +430,7 @@ export function ResumeEditor({
                 editor.chain().focus().insertContentAt({ from, to }, data.rewritten).run()
                 toast({ title: "Rewritten" })
             }
-        } catch (err) {
+        } catch {
             toast({ title: "AI rewrite failed", variant: "destructive" })
         } finally {
             setIsRewriting(false)

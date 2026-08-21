@@ -37,7 +37,7 @@ function CheckEmailContent() {
         const data = await response.json()
         setResendError(data.error || "Failed to resend verification email")
       }
-    } catch (err) {
+    } catch {
       setResendError("An error occurred while resending email")
     } finally {
       setResending(false)

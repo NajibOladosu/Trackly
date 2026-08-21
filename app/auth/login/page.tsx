@@ -99,7 +99,7 @@ function LoginContent() {
       } else {
         setError('Failed to resend verification email')
       }
-    } catch (err) {
+    } catch {
       setError('An error occurred')
     } finally {
       setResending(false)

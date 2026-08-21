@@ -20,32 +20,32 @@ interface LiveInterviewProps {
 }
 
 export function LiveInterview({ sessionId, onComplete, onError }: LiveInterviewProps) {
-  const router = useRouter()
+  const _router = useRouter()
 
   // Interview state
   const [interviewState, setInterviewState] = useState<'idle' | 'starting' | 'active' | 'ending' | 'completed' | 'generating-report'>('idle')
-  const [connectionState, setConnectionState] = useState<ConnectionState>('disconnected')
-  const [client, setClient] = useState<GeminiLiveClient | null>(null)
+  const [_connectionState, setConnectionState] = useState<ConnectionState>('disconnected')
+  const [_client, setClient] = useState<GeminiLiveClient | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   // Auto-termination state
   const [aiSignaledCompletion, setAiSignaledCompletion] = useState(false)
-  const [totalQuestions, setTotalQuestions] = useState(0)
+  const [_totalQuestions, setTotalQuestions] = useState(0)
 
   // Report state
   const [showReportModal, setShowReportModal] = useState(false)
   const [reportData, setReportData] = useState<InterviewReportData | null>(null)
-  const [generatingReport, setGeneratingReport] = useState(false)
+  const [_generatingReport, setGeneratingReport] = useState(false)
 
   // Recording state
-  const [isRecording, setIsRecording] = useState(false)
+  const [_isRecording, setIsRecording] = useState(false)
   const [audioLevel, setAudioLevel] = useState(0)
 
   // Transcript state
   const [transcript, setTranscript] = useState<ConversationTurn[]>([])
-  const [currentAIMessage, setCurrentAIMessage] = useState<string>('')
+  const [_currentAIMessage, setCurrentAIMessage] = useState<string>('')
   const [currentAITranscription, setCurrentAITranscription] = useState<string>('')
-  const [currentUserTranscription, setCurrentUserTranscription] = useState<string>('')
+  const [_currentUserTranscription, setCurrentUserTranscription] = useState<string>('')
 
   // Turn buffering
   const [turnBuffer, setTurnBuffer] = useState<BufferedTurn[]>([])
@@ -62,14 +62,13 @@ export function LiveInterview({ sessionId, onComplete, onError }: LiveInterviewP
   const isAITurnCompleteRef = useRef<boolean>(false)
   const userAnswerAccumulator = useRef<string>('')
 
-  const [questions, setQuestions] = useState<InterviewQuestion[]>([])
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
+  const [_questions, setQuestions] = useState<InterviewQuestion[]>([])
+  const [_currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
 
   // Refs for state accessible in callbacks
   const questionsRef = useRef<InterviewQuestion[]>([])
   const currentQuestionIndexRef = useRef(0)
   const aiTurnCounterRef = useRef(0)
-  const lastSaveTimeRef = useRef(0)
   const isAudioPlayingRef = useRef(false)
   const orbModeRef = useRef<OrbMode>('idle')
 
@@ -200,7 +199,6 @@ export function LiveInterview({ sessionId, onComplete, onError }: LiveInterviewP
             if (toolCall.functionCalls) {
               for (const fc of toolCall.functionCalls) {
                 if (fc.name === 'signal_interview_complete') {
-                  const { reason, questions_asked } = fc.args
                   setAiSignaledCompletion(true)
 
                   // Calculate remaining audio duration
@@ -287,7 +285,7 @@ export function LiveInterview({ sessionId, onComplete, onError }: LiveInterviewP
             // We use a simplified transcript for UI now, focusing on AI
             // The "full" transcript is less critical since we save rich answers via tool
           },
-          onInputTranscription: (text) => {
+          onInputTranscription: (_text) => {
             // User speech transcription
             // We NO LONGER accumulate or save this manually
             // The AI hears it and aggregates it for the tool call
@@ -399,7 +397,7 @@ export function LiveInterview({ sessionId, onComplete, onError }: LiveInterviewP
           if (chunkCount < 3) {
           }
           chunkCount++
-        } catch (error) {
+        } catch {
         }
       }
 
@@ -516,7 +514,7 @@ export function LiveInterview({ sessionId, onComplete, onError }: LiveInterviewP
   /**
    * Add turn to buffer
    */
-  const addTurn = async (speaker: 'ai' | 'user', content: string) => {
+  const _addTurn = async (speaker: 'ai' | 'user', content: string) => {
     const turn: BufferedTurn = {
       turn_number: turnCount + 1,
       speaker,
@@ -719,7 +717,6 @@ export function LiveInterview({ sessionId, onComplete, onError }: LiveInterviewP
         playbackContextRef.current = null
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (

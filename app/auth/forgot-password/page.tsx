@@ -6,7 +6,6 @@ import { motion } from "framer-motion"
 import { Button } from "@/shared/ui/button"
 import { Input } from "@/shared/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card"
-import { createClient } from "@/shared/db/supabase/client"
 import { ArrowLeft } from "lucide-react"
 
 export default function ForgotPasswordPage() {
@@ -14,7 +13,6 @@ export default function ForgotPasswordPage() {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState("")
     const [success, setSuccess] = useState(false)
-    const supabase = createClient()
 
     const handleResetRequest = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -36,7 +34,7 @@ export default function ForgotPasswordPage() {
             } else {
                 setError(data.error || 'Failed to send reset link')
             }
-        } catch (err) {
+        } catch {
             setError('An error occurred. Please try again.')
         } finally {
             setLoading(false)

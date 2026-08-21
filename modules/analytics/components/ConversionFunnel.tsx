@@ -45,7 +45,6 @@ export function ConversionFunnel({ data, title = 'Application Conversion Funnel'
           const widthPercentage = stage.count > 0
             ? Math.max((stage.count / maxCount) * 100, 8)
             : 0
-          const actualPercentage = (stage.count / maxCount) * 100
 
           // Color palette for funnel stages
           const colors = [
