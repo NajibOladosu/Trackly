@@ -1,3 +1,4 @@
+import Image from "next/image"
 import Link from "next/link"
 import { Metadata } from "next"
 import { BlogSettingsButton } from "@/components/blog-settings-button"
@@ -29,7 +30,7 @@ export default function BlogLayout({
             <nav className="fixed top-0 w-full z-50 border-b border-border bg-background/80 backdrop-blur-xl">
                 <div className="container mx-auto px-6 h-16 flex items-center justify-between">
                     <Link href="https://blog.applyos.io" className="flex items-center space-x-2">
-                        <img src="/ApplyOS%20Logo.webp" alt="ApplyOS" className="h-8 w-auto" />
+                        <Image src="/ApplyOS%20Logo.webp" alt="ApplyOS" width={1073} height={1000} className="h-8 w-auto" />
                         <span className="text-xl font-bold font-mono">
                             <span className="text-primary">Apply</span>
                             <span className="text-foreground">OS</span>
@@ -66,7 +67,7 @@ export default function BlogLayout({
             <footer className="bg-card border-t border-border py-12 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-4xl mx-auto text-center">
                     <div className="flex items-center justify-center space-x-2 mb-4">
-                        <img src="/ApplyOS%20Logo.webp" alt="ApplyOS" className="h-6 w-auto" />
+                        <Image src="/ApplyOS%20Logo.webp" alt="ApplyOS" width={1073} height={1000} className="h-6 w-auto" />
                         <span className="text-lg font-bold font-mono text-foreground">
                             <span className="text-primary">Apply</span>OS
                         </span>
