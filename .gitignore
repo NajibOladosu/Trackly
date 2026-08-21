@@ -1,67 +1,83 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
-/node_modules
-/.pnp
+# ---------------------------------------------------------------------------
+# Dependencies
+# ---------------------------------------------------------------------------
+node_modules/
+.pnp
 .pnp.js
 
-# testing
-/coverage
+# This project standardises on npm (see .github/workflows and vercel.json).
+# Reject stray lockfiles from other package managers.
+pnpm-lock.yaml
+yarn.lock
+bun.lockb
 
-# next.js
-/.next/
-/out/
+# ---------------------------------------------------------------------------
+# Build output
+# ---------------------------------------------------------------------------
+.next/
+out/
+build/
+dist/
+*.tsbuildinfo
+next-env.d.ts
 
-# production
-/build
-extension/
-/docs
+# ---------------------------------------------------------------------------
+# Test & coverage artifacts
+# ---------------------------------------------------------------------------
+coverage/
+test-results/
+playwright-report/
+playwright/.cache/
+blob-report/
 
-# misc
-.DS_Store
+# ---------------------------------------------------------------------------
+# Environment & secrets
+# ---------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
 *.pem
+*.key
+*.p12
 
-# local tools/config that should not be pushed
-.kilocode
-
-# markdown: ignore all .md files except README.md
-*.md
-!.github/*
-!README.md
-!CONTRIBUTING.md
-!CODE_OF_CONDUCT.md
-
-# debug
+# ---------------------------------------------------------------------------
+# Logs & scratch files
+# ---------------------------------------------------------------------------
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+.tmp/
+.tmp-*
+tmp/
 
-# local env files
-.env*.local
-.env
+# ---------------------------------------------------------------------------
+# Local docs & notes (kept on disk, not committed)
+# ---------------------------------------------------------------------------
+docs/
+AGENTS.md
+
+# ---------------------------------------------------------------------------
+# Local tooling, agent state & security scan output
+# ---------------------------------------------------------------------------
 .claude/
-/Trackly
-/archive
-/extension
+.kilocode/
+.gstack/
+.remember/
+.cursor/
+.aider*
+strix_runs/
 
-# vercel
+# ---------------------------------------------------------------------------
+# Platform
+# ---------------------------------------------------------------------------
 .vercel
 
-# local security audit reports
-.gstack/
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
-.git-filter-repo.py
-applyos-weekday-auto-publisher.json
-backfill-screenshots.js
-analyze-screenshots.js
-Call_Gemini_Image_Generation_API.json
-applyos_social_media_manager.json
-list-gemini-models.js
-
-# playwright
-/test-results
-/playwright-report
-/playwright/.cache
+# ---------------------------------------------------------------------------
+# OS / editor
+# ---------------------------------------------------------------------------
+.DS_Store
+Thumbs.db
+.idea/
+*.swp
+*.swo
