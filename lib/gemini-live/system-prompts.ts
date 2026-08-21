@@ -17,7 +17,7 @@ export interface SystemPromptConfig {
  * Injects pre-generated questions as guidelines while allowing AI flexibility
  */
 export function generateSystemInstruction(config: SystemPromptConfig): string {
-  const { sessionType, difficulty, companyName, questions } = config
+  const { sessionType, companyName, questions } = config
 
   const companyContext = companyName ? `for ${companyName}` : 'for this position'
   const questionList = questions

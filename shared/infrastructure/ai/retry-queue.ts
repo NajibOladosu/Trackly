@@ -76,7 +76,7 @@ export class RetryQueueService {
     try {
       const now = new Date()
 
-      const { data, error } = await this.supabase
+      const { data } = await this.supabase
         .from('ai_retry_queue')
         .select('*')
         .is('completed_at', null)
@@ -122,7 +122,7 @@ export class RetryQueueService {
     taskId: string,
     nextRetryTime: Date,
     error?: string,
-    maxAttempts: number = 5
+    _maxAttempts: number = 5
   ): Promise<boolean> {
     try {
       const { error: updateError } = await this.supabase
@@ -272,18 +272,18 @@ export class RetryQueueService {
     try {
       const now = new Date()
 
-      const { data: pending, error: pendingError } = await this.supabase
+      const { data: pending } = await this.supabase
         .from('ai_retry_queue')
         .select('id', { count: 'exact' })
         .is('completed_at', null)
         .lte('scheduled_retry_time', now.toISOString())
 
-      const { data: completed, error: completedError } = await this.supabase
+      const { data: completed } = await this.supabase
         .from('ai_retry_queue')
         .select('id', { count: 'exact' })
         .not('completed_at', 'is', null)
 
-      const { data: failed, error: failedError } = await this.supabase
+      const { data: failed } = await this.supabase
         .from('ai_retry_queue')
         .select('id', { count: 'exact' })
         .is('completed_at', null)

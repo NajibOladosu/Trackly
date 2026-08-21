@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Card } from '@/shared/ui/card'
 import { Button } from '@/shared/ui/button'
-import { Download, Play } from 'lucide-react'
+import { Download } from 'lucide-react'
 import { motion } from 'framer-motion'
 import type { ConversationTurn } from '@/types/database'
 

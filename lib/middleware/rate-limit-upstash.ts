@@ -115,7 +115,6 @@ export async function checkRateLimitUpstash(
   if (!Number.isFinite(count)) return 'fallback'
 
   const resetMs = ttlMs > 0 ? Date.now() + ttlMs : Date.now() + config.windowMs
-  const remaining = Math.max(0, config.maxRequests - count)
 
   if (count > config.maxRequests) {
     const retryAfter = Math.max(1, Math.ceil((resetMs - Date.now()) / 1000))

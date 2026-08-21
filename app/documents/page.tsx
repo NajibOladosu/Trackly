@@ -16,7 +16,7 @@ import {
   Loader2,
 } from "lucide-react"
 import Link from "next/link"
-import type { Document, DocumentReport } from "@/types/database"
+import type { Document } from "@/types/database"
 import { getDocuments, deleteDocument } from "@/modules/documents/services/document.service"
 import { cn } from "@/shared/lib/utils"
 import { useToast } from "@/shared/ui/use-toast"

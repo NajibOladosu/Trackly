@@ -18,29 +18,12 @@ function OrbMesh({ mode, audioLevel = 0 }: OrbProps) {
 
   const noise3D = useMemo(() => createNoise3D(), [])
 
-  const colors = {
-    idle: '#18BB70',
-    user: '#FFD600',
-    ai: '#18BB70',
-  }
-
   const amplitudes = {
     idle: 0.075,
     user: 0.2,
     ai: 0.3,
   }
 
-  const glows = {
-    idle: 0.25,
-    user: 0.15,
-    ai: 0.45,
-  }
-
-  const scales = {
-    idle: 1,
-    user: 1,
-    ai: 1,
-  }
 
   useMemo(() => {
     // eslint-disable-next-line react-hooks/refs -- geometry buffer cached on a ref to avoid recreating per frame

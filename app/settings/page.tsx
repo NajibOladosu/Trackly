@@ -1,13 +1,11 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
 import { useTheme } from "next-themes"
 import { DashboardLayout } from "@/components/layout/dashboard-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card"
 import { Button } from "@/shared/ui/button"
 import { Input } from "@/shared/ui/input"
-import { Badge } from "@/shared/ui/badge"
 import {
   Bell,
   Download,
@@ -42,7 +40,6 @@ type AiSettings = {
 
 export default function SettingsPage() {
   const supabase = createClient()
-  const router = useRouter()
   const { theme, setTheme } = useTheme()
   const [user, setUser] = useState<SupabaseUser | null>(null)
   const [loading, setLoading] = useState(true)

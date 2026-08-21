@@ -6,7 +6,6 @@ import type { Application, Document } from "@/types/database"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/shared/ui/card"
 import { Button } from "@/shared/ui/button"
 import { Badge } from "@/shared/ui/badge"
-import { Progress } from "@/shared/ui/progress"
 import {
     Loader2,
     Sparkles,
@@ -120,13 +119,6 @@ export function AnalysisTab({ application, documents }: AnalysisTabProps) {
         } finally {
             setIsAnalyzing(false)
         }
-    }
-
-    // Helper to format score text color - for inside the circular ring
-    const getScoreColor = (score: number) => {
-        if (score >= 80) return "text-green-600"
-        if (score >= 60) return "text-orange-600"
-        return "text-red-600"
     }
 
     // Helper to format score background

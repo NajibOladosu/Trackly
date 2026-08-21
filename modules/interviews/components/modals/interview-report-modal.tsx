@@ -30,7 +30,6 @@ export function InterviewReportModal({
     isOpen,
     onClose,
     reportData,
-    sessionId,
     onRetake,
 }: InterviewReportModalProps) {
     if (!reportData) return null

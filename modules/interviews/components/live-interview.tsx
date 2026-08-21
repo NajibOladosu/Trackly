@@ -24,7 +24,7 @@ export function LiveInterview({ sessionId, onComplete, onError }: LiveInterviewP
   // Recording state
   const [isRecording, setIsRecording] = useState(false)
   const [isMuted, setIsMuted] = useState(false)
-  const [micPermission, setMicPermission] = useState<'granted' | 'denied' | 'prompt'>('prompt')
+  const [_micPermission, setMicPermission] = useState<'granted' | 'denied' | 'prompt'>('prompt')
 
   // Transcript state
   const [transcript, setTranscript] = useState<ConversationTurn[]>([])

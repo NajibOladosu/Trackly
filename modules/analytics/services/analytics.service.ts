@@ -161,7 +161,6 @@ export async function getStatusFlowData(
   const stages: ApplicationStatus[] = ['draft', 'submitted', 'in_review', 'interview', 'offer', 'rejected']
   const notSubmittedStage = 'not_submitted'
   const pendingStage = 'pending'
-  const allStages = [...stages, notSubmittedStage, pendingStage]
 
   // Helper function to create all nodes - values will be calculated from link flows
   const createNodesFromLinks = (links: Array<{ source: number; target: number; value: number }>) => {
@@ -271,9 +270,6 @@ export async function getStatusFlowData(
       farthestStageIndex = currentIndex
     }
   })
-
-  const farthestStage = stages[farthestStageIndex]
-
 
   // Build direct path from draft to current status for each application
   // Only stages BEFORE the farthest stage link to "Pending"

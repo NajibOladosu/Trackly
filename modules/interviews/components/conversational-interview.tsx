@@ -55,8 +55,6 @@ export function ConversationalInterview({ sessionId, onComplete }: Conversationa
     const [totalQuestions, setTotalQuestions] = useState(0)
     const [error, setError] = useState<string | null>(null)
 
-    const mediaRecorderRef = useRef<MediaRecorder | null>(null)
-    const audioChunksRef = useRef<Blob[]>([])
     const recognitionRef = useRef<SpeechRecognitionInstance | null>(null)
     const silenceTimerRef = useRef<NodeJS.Timeout | null>(null)
     const transcriptRef = useRef<HTMLDivElement>(null)

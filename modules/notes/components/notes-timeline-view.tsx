@@ -20,7 +20,6 @@ export function NotesTimelineView({
   onEdit,
   onDelete,
   onTogglePin,
-  isLoading = false,
 }: NotesTimelineViewProps) {
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [pinningId, setPinningId] = useState<string | null>(null)

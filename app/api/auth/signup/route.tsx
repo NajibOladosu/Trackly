@@ -5,7 +5,6 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/shared/db/supabase/server';
 import { createClient as createAdminClient } from '@supabase/supabase-js';
 import { render } from '@react-email/render';
 import VerifyEmailTemplate from '@/emails/verify-email';

@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { DashboardLayout } from "@/components/layout/dashboard-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card"
@@ -21,11 +20,9 @@ import {
   Calendar,
   Briefcase,
   Loader2,
-  TrendingUp,
   Award,
   Target,
 } from "lucide-react"
-import { createClient } from "@/shared/db/supabase/client"
 import { getApplications, getApplicationStats } from "@/modules/applications/services/application.service"
 import { getDocuments } from "@/modules/documents/services/document.service"
 import type { Application } from "@/types/database"
@@ -65,8 +62,6 @@ interface AnalyticsData {
 
 
 export default function DashboardPage() {
-  const router = useRouter()
-  const supabase = createClient()
   const [activeTab, setActiveTab] = useState("overview")
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState({ total: 0, pending: 0, upcomingDeadlines: 0 })

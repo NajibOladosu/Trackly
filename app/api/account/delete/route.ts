@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
         try {
           deleteData = await deleteResponse.json();
           console.log(`   Response body:`, JSON.stringify(deleteData));
-        } catch (parseErr) {
+        } catch {
           console.log(`   Response body: (failed to parse as JSON)`);
         }
       } else {

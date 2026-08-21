@@ -103,7 +103,7 @@ export async function POST(req: NextRequest) {
         let data
         try {
             data = JSON.parse(cleanJson)
-        } catch (e) {
+        } catch {
             console.error('Failed to parse AI response:', cleanJson)
             return NextResponse.json({ error: "Failed to parse AI analysis" }, { status: 500 })
         }

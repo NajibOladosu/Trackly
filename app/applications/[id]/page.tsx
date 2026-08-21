@@ -35,7 +35,7 @@ import { getApplication, updateApplication, getApplicationDocuments, updateAppli
 import { getQuestionsByApplicationId, updateQuestion, deleteQuestion, createQuestion } from "@/modules/interviews/services/question.service"
 import { getDocuments } from "@/modules/documents/services/document.service"
 import { getNotesByApplicationId, createNote, updateNote, deleteNote, togglePinNote } from "@/modules/notes/services/note.service"
-import { getInterviewSessions, deleteInterviewSession, getSessionWithQuestionsAndAnswers } from "@/modules/interviews/services/interview.service"
+import { getInterviewSessions, deleteInterviewSession } from "@/modules/interviews/services/interview.service"
 import { EditApplicationModal } from "@/modules/applications/components/modals/edit-application-modal"
 import { EditQuestionsModal } from "@/modules/interviews/components/modals/edit-questions-modal"
 import { ConfirmModal } from "@/components/modals/confirm-modal"
@@ -79,7 +79,7 @@ export default function ApplicationDetailPage() {
   const [initialStatus, setInitialStatus] = useState<Application["status"] | null>(null)
   const [statusDropdownOpen, setStatusDropdownOpen] = useState(false)
   const [showDocumentModal, setShowDocumentModal] = useState(false)
-  const [isSavingChanges, setIsSavingChanges] = useState(false)
+  const [_isSavingChanges, setIsSavingChanges] = useState(false)
   const [jobDescriptionExpanded, setJobDescriptionExpanded] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
   const [showEditQuestionsModal, setShowEditQuestionsModal] = useState(false)
@@ -88,7 +88,7 @@ export default function ApplicationDetailPage() {
   const [generatingCoverLetter, setGeneratingCoverLetter] = useState(false)
   const [savingCoverLetter, setSavingCoverLetter] = useState(false)
   const [notes, setNotes] = useState<ApplicationNote[]>([])
-  const [notesLoading, setNotesLoading] = useState(false)
+  const [notesLoading] = useState(false)
   const [notesViewType, setNotesViewType] = useState<"card" | "timeline">("card")
   const [notesSortOrder, setNotesSortOrder] = useState<"newest" | "oldest">("newest")
   const [showNoteModal, setShowNoteModal] = useState(false)
@@ -96,7 +96,6 @@ export default function ApplicationDetailPage() {
   const [showNewInterviewModal, setShowNewInterviewModal] = useState(false)
   const [interviewSessions, setInterviewSessions] = useState<InterviewSession[]>([])
   const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null)
-  const [interviewLoading, setInterviewLoading] = useState(false)
   const [activeTab, setActiveTab] = useState("questions")
   const [deletingSessionId, setDeletingSessionId] = useState<string | null>(null)
   const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false)
@@ -458,14 +457,14 @@ export default function ApplicationDetailPage() {
     }
   }
 
-  const hasChanges = () => {
+  const _hasChanges = () => {
     const statusChanged = pendingStatus !== initialStatus
     const documentsChanged = selectedDocumentIds.length !== initialSelectedDocumentIds.length ||
       !selectedDocumentIds.every(id => initialSelectedDocumentIds.includes(id))
     return statusChanged || documentsChanged
   }
 
-  const saveChanges = async () => {
+  const _saveChanges = async () => {
     if (!application) return
 
     setIsSavingChanges(true)
@@ -725,15 +724,6 @@ export default function ApplicationDetailPage() {
     interview: "Interview",
     offer: "Offer",
     rejected: "Rejected",
-  }
-
-  const statusVariant: Record<Application["status"], "outline" | "info" | "warning" | "success" | "default" | "destructive"> = {
-    draft: "outline",
-    submitted: "info",
-    in_review: "warning",
-    interview: "success",
-    offer: "default",
-    rejected: "destructive",
   }
 
   const priorityColor: Record<Application["priority"], string> = {

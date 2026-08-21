@@ -65,7 +65,6 @@ export async function detectPdfLayout(buffer: Buffer): Promise<DetectedLayout> {
 
         if (!pdf?.Pages?.length) return DEFAULT_LAYOUT
         const firstPage = pdf.Pages[0]
-        const pageWidth = firstPage.Width ?? 60
         const pageHeight = firstPage.Height ?? 80
 
         const xs: number[] = []

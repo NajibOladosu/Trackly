@@ -4,7 +4,7 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/shared/ui/card"
 import { Badge } from "@/shared/ui/badge"
 import { Target, XCircle, Lightbulb, CheckCircle, AlertTriangle } from "lucide-react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion } from "framer-motion"
 import { cn } from "@/shared/lib/utils"
 
 export type ResumeAnalysisResult = {

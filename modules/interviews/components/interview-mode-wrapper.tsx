@@ -7,7 +7,6 @@ import { Badge } from '@/shared/ui/badge'
 import { MessageSquare, Mic, ArrowLeft } from 'lucide-react'
 import { InterviewSessionDetail } from './interview-session-detail'
 import dynamic from 'next/dynamic'
-import { ConversationTranscript } from './conversation-transcript'
 
 const LiveInterview = dynamic(() => import('./live-interview-v2').then(mod => mod.LiveInterview), {
     loading: () => <div className="flex items-center justify-center h-96"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" /></div>,
@@ -25,7 +24,7 @@ interface InterviewModeWrapperProps {
 export function InterviewModeWrapper({ sessionId, onComplete, onBack }: InterviewModeWrapperProps) {
     const [session, setSession] = useState<InterviewSession | null>(null)
     const [mode, setMode] = useState<'select' | 'text' | 'conversation' | 'review'>('select')
-    const [transcript, setTranscript] = useState<ConversationTurn[]>([])
+    const [_transcript, setTranscript] = useState<ConversationTurn[]>([])
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
