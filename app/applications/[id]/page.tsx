@@ -35,6 +35,7 @@ import { getApplication, updateApplication, getApplicationDocuments, updateAppli
 import { getQuestionsByApplicationId, updateQuestion, deleteQuestion, createQuestion } from "@/modules/interviews/services/question.service"
 import { getDocuments } from "@/modules/documents/services/document.service"
 import { JobFitCard } from "@/modules/applications/components/job-fit-card"
+import { JdSummaryCard } from "@/modules/applications/components/jd-summary-card"
 import { getNotesByApplicationId, createNote, updateNote, deleteNote, togglePinNote } from "@/modules/notes/services/note.service"
 import { getInterviewSessions, deleteInterviewSession } from "@/modules/interviews/services/interview.service"
 import { EditApplicationModal } from "@/modules/applications/components/modals/edit-application-modal"
@@ -870,6 +871,7 @@ export default function ApplicationDetailPage() {
                     {jobDescriptionExpanded ? "Show Less" : "Show More"}
                   </button>
                 )}
+                <JdSummaryCard jobDescription={application.job_description} />
               </div>
             )}
 
