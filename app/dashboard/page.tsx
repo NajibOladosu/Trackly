@@ -8,6 +8,7 @@ import { Badge } from "@/shared/ui/badge"
 import { Button } from "@/shared/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs"
 import { ActivityStats } from "@/modules/analytics/components/ActivityStats"
+import { FollowUpCard } from "@/modules/applications/components/follow-up-card"
 import { MetricsCard } from "@/modules/analytics/components/MetricsCard"
 import { TimelineChart } from "@/modules/analytics/components/TimelineChart"
 import { ConversionFunnel } from "@/modules/analytics/components/ConversionFunnel"
@@ -68,6 +69,7 @@ export default function DashboardPage() {
   const [stats, setStats] = useState({ total: 0, pending: 0, upcomingDeadlines: 0 })
   const [documentsCount, setDocumentsCount] = useState(0)
   const [recentApplications, setRecentApplications] = useState<Application[]>([])
+  const [allApplications, setAllApplications] = useState<Application[]>([])
   const [activityDates, setActivityDates] = useState<string[]>([])
   const [statusDistribution, setStatusDistribution] = useState<Record<string, number>>({})
 
@@ -115,6 +117,7 @@ export default function DashboardPage() {
       if (statsData) setStats(statsData)
       setDocumentsCount(documentsData.length)
       setRecentApplications(applicationsData.slice(0, 4))
+      setAllApplications(applicationsData)
       setActivityDates(applicationsData.map(app => app.created_at))
 
       // Calculate status distribution
@@ -255,6 +258,9 @@ export default function DashboardPage() {
                 )
               })}
             </div>
+
+            {/* Follow-ups due */}
+            <FollowUpCard applications={allApplications} />
 
             {/* Activity: streak, weekly goal, heatmap */}
             <ActivityStats activityDates={activityDates} />
