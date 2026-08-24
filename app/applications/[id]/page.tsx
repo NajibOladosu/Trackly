@@ -36,6 +36,7 @@ import { getQuestionsByApplicationId, updateQuestion, deleteQuestion, createQues
 import { getDocuments } from "@/modules/documents/services/document.service"
 import { JobFitCard } from "@/modules/applications/components/job-fit-card"
 import { JdSummaryCard } from "@/modules/applications/components/jd-summary-card"
+import { ContactsTab } from "@/modules/applications/components/contacts-tab"
 import { getNotesByApplicationId, createNote, updateNote, deleteNote, togglePinNote } from "@/modules/notes/services/note.service"
 import { getInterviewSessions, deleteInterviewSession } from "@/modules/interviews/services/interview.service"
 import { EditApplicationModal } from "@/modules/applications/components/modals/edit-application-modal"
@@ -997,7 +998,7 @@ export default function ApplicationDetailPage() {
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="flex justify-center mb-6">
-            <TabsList className="grid grid-cols-6 w-full sm:w-auto">
+            <TabsList className="grid grid-cols-7 w-full sm:w-auto">
               <TabsTrigger
                 value="questions"
                 className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
@@ -1021,6 +1022,12 @@ export default function ApplicationDetailPage() {
                 className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
               >
                 Job Fit
+              </TabsTrigger>
+              <TabsTrigger
+                value="contacts"
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
+                Contacts
               </TabsTrigger>
               <TabsTrigger
                 value="notes"
@@ -1315,6 +1322,11 @@ export default function ApplicationDetailPage() {
               jobDescription={application.job_description}
               documentId={selectedDocumentIds[0]}
             />
+          </TabsContent>
+
+          {/* Contacts Tab */}
+          <TabsContent value="contacts" className="mt-6">
+            <ContactsTab applicationId={application.id} />
           </TabsContent>
 
           {/* Notes Tab */}
