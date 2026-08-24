@@ -18,6 +18,7 @@ import {
   MessageSquare,
   Mic,
   Briefcase,
+  BookOpen,
 } from "lucide-react"
 import { motion } from "framer-motion"
 
@@ -28,6 +29,7 @@ const navItems = [
   { href: "/interview", label: "Interview", icon: Mic },
   { href: "/documents", label: "Documents", icon: FolderOpen },
   { href: "/upload", label: "Upload", icon: Upload },
+  { href: "/resources", label: "Resources", icon: BookOpen },
   { href: "/notifications", label: "Notifications", icon: Bell },
   { href: "/feedback", label: "Feedback", icon: MessageSquare },
   { href: "/profile", label: "Profile", icon: User },
