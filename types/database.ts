@@ -128,6 +128,19 @@ export interface ApplicationNote {
   updated_at: string
 }
 
+export interface ApplicationContact {
+  id: string
+  application_id: string
+  user_id: string
+  name: string
+  role: string | null
+  email: string | null
+  linkedin_url: string | null
+  notes: string | null
+  created_at: string
+  updated_at: string
+}
+
 // Interview feature types
 export type SessionType = 'behavioral' | 'technical' | 'company_specific' | 'mixed' | 'resume_grill'
 export type SessionStatus = 'in_progress' | 'completed' | 'abandoned'
